@@ -13,18 +13,18 @@ public class Epic extends Task {
     }
 
     public Epic(String name, String description) {
-        super(name, description, -1, TaskStatus.NEW);
-        this.subtasks = new ArrayList<>();
+        this(name, description, -1, null);
     }
 
     @Override
     public String toString() {
-        return super.toString().replace("Задача", "Эпик") + "; Подзадачи: " + subtasks.stream()
-                .map(st -> ("#" + st.getId())).collect(Collectors.joining(" "));
+        return super.toString().replace("Задача", "Эпик") + "; Подзадачи: " + (subtasks == null || subtasks.isEmpty() ?
+                "нет" : subtasks.stream().map(st -> ("#" + String.format("%08d", st.getId())))
+                .collect(Collectors.joining(", ")));
     }
 
     private void updateStatus() {
-        if (subtasks.isEmpty()) {
+        if (subtasks == null || subtasks.isEmpty()) {
             this.status = TaskStatus.DONE;
             return;
         }
@@ -40,7 +40,7 @@ public class Epic extends Task {
     }
 
     public ArrayList<Subtask> getSubtasks() {
-        return subtasks;
+        return subtasks == null ? new ArrayList<>() : subtasks;
     }
 
     boolean addSubtask(Subtask subtask) {

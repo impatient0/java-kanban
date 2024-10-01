@@ -70,7 +70,7 @@ public class TaskManager {
     public void updateTask(int id, String name, String description, TaskStatus status)
             throws TaskNotFoundException, BadTaskTypeException {
         if (!tasks.containsKey(id)) {
-            throw new TaskNotFoundException("Не найдена задача #" + id + "!");
+            throw new TaskNotFoundException("Не найдена задача #" + String.format("%08d", id) + "!");
         }
         if (!tasks.get(id).getClass().equals(Task.class)) {
             throw new BadTaskTypeException(
@@ -83,7 +83,7 @@ public class TaskManager {
     public void updateSubtask(int id, String name, String description, TaskStatus status, int epicId)
             throws TaskNotFoundException, BadTaskTypeException {
         if (!tasks.containsKey(id)) {
-            throw new TaskNotFoundException("Не найдена подзадача #" + id + "!");
+            throw new TaskNotFoundException("Не найдена подзадача #" + String.format("%08d", id) + "!");
         }
         if (!tasks.get(id).getClass().equals(Subtask.class)) {
             throw new BadTaskTypeException(
@@ -92,7 +92,7 @@ public class TaskManager {
         }
         if (!tasks.get(epicId).getClass().equals(Epic.class)) {
             throw new BadTaskTypeException(
-                    "Не может быть подзадачей для #" + epicId + ", т.к. #" + epicId + "не является эпиком!");
+                    "Не может быть подзадачей для #" + String.format("%08d", epicId) + ", т.к. #" + String.format("%08d", epicId) + "не является эпиком!");
         }
         Subtask subtask = new Subtask(name, description, id, status, (Epic) tasks.get(epicId));
         // oldEpic и newEpic создаются как отдельные переменные, т.к. при обновлении подзадачи мог измениться свой эпик
@@ -106,11 +106,11 @@ public class TaskManager {
     public void updateEpic(int id, String name, String description, ArrayList<Subtask> subtasks)
             throws TaskNotFoundException, BadTaskTypeException {
         if (!tasks.containsKey(id)) {
-            throw new TaskNotFoundException("Не найден эпик #" + id + "!");
+            throw new TaskNotFoundException("Не найден эпик #" + String.format("%08d", id) + "!");
         }
         if (!tasks.get(id).getClass().equals(Epic.class)) {
             throw new BadTaskTypeException(
-                    "Задача #" + id + " является " + (tasks.get(id) instanceof Subtask ? "подзадачей" : "задачей")
+                    "Задача #" + String.format("%08d", id) + " является " + (tasks.get(id) instanceof Subtask ? "подзадачей" : "задачей")
                             + ", а не эпиком!");
         }
         tasks.put(id, new Epic(name, description, id, subtasks));
@@ -147,14 +147,14 @@ public class TaskManager {
         for (Task t : tasks.values()) {
             if (t instanceof Subtask) {
                 ((Subtask) t).getEpic().removeSubtask((Subtask) t);
-                tasks.remove(t.getId());
             }
         }
+        tasks.entrySet().removeIf(t -> t.getValue() instanceof Subtask);
     }
 
     public void clearEpics() {
         // подзадачи не могут существовать без эпиков, поэтому также удаляются
-        tasks.entrySet().removeIf(t -> (t instanceof Epic || t instanceof Subtask));
+        tasks.entrySet().removeIf(t -> (t.getValue() instanceof Epic || t.getValue() instanceof Subtask));
     }
 
     public Task get(int id) {

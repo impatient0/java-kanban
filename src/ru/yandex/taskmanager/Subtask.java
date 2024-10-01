@@ -14,7 +14,8 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return super.toString().replace("Задача", "Подзадача") + "; Относится к эпику #" + epic.getId();
+        return super.toString().replace("Задача", "Подзадача") + "; Относится к эпику #" + String.format("%08d",
+                epic.getId());
     }
 
     public Epic getEpic() {

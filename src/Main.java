@@ -1,5 +1,7 @@
 import ru.yandex.taskmanager.*;
 
+import java.util.stream.Collectors;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -20,8 +22,9 @@ public class Main {
                         + "привлекательности."));
         int s3 = taskManager.add(new Subtask("Анализ текущего интерфейса",
                 "Изучение и анализ текущего пользовательского интерфейса приложения для выявления недостатков и "
-                        + "возможностей для улучшения.", (Epic) taskManager.get(e1)));
-        System.out.println(taskManager.getAll());
+                        + "возможностей для улучшения.", (Epic) taskManager.get(e2)));
+        System.out.println("Изначальный список задач:\n"+ taskManager.getAll().stream().map(
+                Task::toString).collect(Collectors.joining("\n")) + "\n");
         taskManager.update(
                 new Task("Подготовка к экзамену", "Составить план подготовки к экзамену и повесить на холодильник.", t1,
                         TaskStatus.IN_PROGRESS));
@@ -29,9 +32,16 @@ public class Main {
                 "Подготовка предложений по улучшению рабочих процессов на основе проведённого анализа.", s2,
                 TaskStatus.IN_PROGRESS, (Epic) taskManager.get(e1)));
         taskManager.remove(s3);
-        System.out.println(taskManager.getAll());
+        System.out.println("Обновили задачу #00000000 и подзадачу #00000004, а также удалили подзадачу #00000006:\n" + taskManager.getAll().stream().map(
+                Task::toString).collect(Collectors.joining("\n")) + "\n");
         taskManager.remove(e1);
         taskManager.remove(t2);
-        System.out.println(taskManager.getAll());
+        System.out.println("Удалили задачу #00000001 и эпик #00000002:\n" + taskManager.getAll().stream().map(
+                Task::toString).collect(Collectors.joining("\n")) + "\n");
+        taskManager.clearEpics();
+        System.out.println("Очистили эпики:\n" + taskManager.getAll().stream().map(
+                Task::toString).collect(Collectors.joining("\n")) + "\n");
+        taskManager.clear();
+        System.out.println("Полностью очистили список:\n" + taskManager.getAll());
     }
 }
