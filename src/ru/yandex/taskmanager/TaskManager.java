@@ -92,7 +92,8 @@ public class TaskManager {
         }
         if (!tasks.get(epicId).getClass().equals(Epic.class)) {
             throw new BadTaskTypeException(
-                    "Не может быть подзадачей для #" + String.format("%08d", epicId) + ", т.к. #" + String.format("%08d", epicId) + "не является эпиком!");
+                    "Не может быть подзадачей для #" + String.format("%08d", epicId) + ", т.к. #" + String.format(
+                            "%08d", epicId) + "не является эпиком!");
         }
         Subtask subtask = new Subtask(name, description, id, status, (Epic) tasks.get(epicId));
         // oldEpic и newEpic создаются как отдельные переменные, т.к. при обновлении подзадачи мог измениться свой эпик
@@ -110,8 +111,8 @@ public class TaskManager {
         }
         if (!tasks.get(id).getClass().equals(Epic.class)) {
             throw new BadTaskTypeException(
-                    "Задача #" + String.format("%08d", id) + " является " + (tasks.get(id) instanceof Subtask ? "подзадачей" : "задачей")
-                            + ", а не эпиком!");
+                    "Задача #" + String.format("%08d", id) + " является " + (tasks.get(id) instanceof Subtask ?
+                            "подзадачей" : "задачей") + ", а не эпиком!");
         }
         tasks.put(id, new Epic(name, description, id, subtasks));
     }
