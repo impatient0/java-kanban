@@ -1,4 +1,4 @@
-package ru.yandex.taskmanager;
+package ru.yandex.model;
 
 public enum TaskStatus {
     NEW,

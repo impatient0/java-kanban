@@ -1,11 +1,11 @@
-package ru.yandex.taskmanager;
+package ru.yandex.model;
 
 import java.util.Objects;
 
 public class Task {
     private final String name;
     private final String description;
-    private final int id;
+    protected int id;
     protected TaskStatus status;
 
     public Task(String name, String description, int id, TaskStatus status) {
@@ -13,6 +13,10 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Task(String name, String description) {

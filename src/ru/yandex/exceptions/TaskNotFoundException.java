@@ -1,4 +1,4 @@
-package ru.yandex.taskmanager;
+package ru.yandex.exceptions;
 
 public class TaskNotFoundException extends RuntimeException {
     public TaskNotFoundException(String message) {
