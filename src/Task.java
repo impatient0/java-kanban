@@ -4,13 +4,21 @@ public class Task {
     private final String name;
     private final String description;
     private final int id;
-    private final TaskStatus status;
+    private TaskStatus status;
 
     public Task(String name, String description, int id, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public int getId() {
@@ -38,6 +46,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Задача #" + String.format("%08d", id) + "\n \"" + name + "\"\n" + "Описание: " + description;
+        return "Задача #" + String.format("%08d", id) + " \"" + name + "\": " + description + " Статус: " + status;
     }
 }

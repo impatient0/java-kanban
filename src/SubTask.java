@@ -8,6 +8,10 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return super.toString().replace("Задача", "Подзадача") + "\n Относится к эпику #" + epic.getId();
+        return super.toString().replace("Задача", "Подзадача") + " Относится к эпику #" + epic.getId();
+    }
+
+    public Epic getEpic() {
+        return epic;
     }
 }

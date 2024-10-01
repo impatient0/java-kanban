@@ -13,7 +13,11 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return super.toString().replace("Задача", "Эпик") + "\n Подзадачи:\n" + subtasks.stream()
-                .map(st -> ("\t#" + st.getId())).collect(Collectors.joining("\n"));
+        return super.toString().replace("Задача", "Эпик") + " Подзадачи: " + subtasks.stream()
+                .map(st -> ("#" + st.getId())).collect(Collectors.joining(" "));
+    }
+
+    public ArrayList<SubTask> getSubtasks() {
+        return subtasks;
     }
 }
