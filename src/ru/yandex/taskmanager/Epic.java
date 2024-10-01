@@ -25,7 +25,7 @@ public class Epic extends Task {
 
     private void updateStatus() {
         if (subtasks.isEmpty()) {
-            this.status = TaskStatus.NEW;
+            this.status = TaskStatus.DONE;
             return;
         }
         if (subtasks.stream().allMatch(st -> TaskStatus.NEW.equals(st.getStatus()))) {

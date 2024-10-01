@@ -95,12 +95,11 @@ public class TaskManager {
                     "Не может быть подзадачей для #" + epicId + ", т.к. #" + epicId + "не является эпиком!");
         }
         Subtask subtask = new Subtask(name, description, id, status, (Epic) tasks.get(epicId));
+        // oldEpic и newEpic создаются как отдельные переменные, т.к. при обновлении подзадачи мог измениться свой эпик
         Epic oldEpic = ((Subtask) tasks.get(id)).getEpic();
         Epic newEpic = (Epic) tasks.get(epicId);
-        if (!oldEpic.equals(newEpic)) {
-            oldEpic.removeSubtask(subtask);
-            newEpic.addSubtask(subtask);
-        }
+        oldEpic.removeSubtask(subtask);
+        newEpic.addSubtask(subtask);
         tasks.put(id, subtask);
     }
 
