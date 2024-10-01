@@ -8,7 +8,7 @@ public class Main {
         int t4 = taskManager.addTask("Изучение нового языка", "Определить уровень владения языком.");
         int t5 = taskManager.addTask("Путешествие мечты", "Выбрать направление путешествия.");
         System.out.println(taskManager.getAllTasks());
-        taskManager.updateTask(t1, "Подготовка к экзамену", "Составить план подготовки к экзамену и повесить на холодильник.", TaskStatus.IN_PROGRESS);
+        taskManager.updateTask(t1, "Подготовка к экзамену", "Составить план подготовки к экзамену.", TaskStatus.IN_PROGRESS);
         System.out.println(taskManager.getAllTasks());
     }
 }
