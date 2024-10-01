@@ -1,16 +1,22 @@
+package ru.yandex.taskmanager;
+
 import java.util.Objects;
 
 public class Task {
     private final String name;
     private final String description;
     private final int id;
-    private TaskStatus status;
+    protected TaskStatus status;
 
     public Task(String name, String description, int id, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
+    }
+
+    public Task(String name, String description) {
+        this(name, description, -1, TaskStatus.NEW);
     }
 
     public String getName() {
