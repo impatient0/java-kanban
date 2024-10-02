@@ -3,8 +3,8 @@ package ru.yandex.model;
 import java.util.Objects;
 
 public class Task {
-    private final String name;
-    private final String description;
+    protected String name;
+    protected String description;
     protected int id;
     protected TaskStatus status;
 
@@ -13,10 +13,6 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Task(String name, String description) {
@@ -37,6 +33,18 @@ public class Task {
 
     public TaskStatus getStatus() {
         return status;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

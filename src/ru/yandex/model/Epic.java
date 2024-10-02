@@ -8,7 +8,6 @@ public class Epic extends Task {
 
     public Epic(String name, String description, int id) {
         super(name, description, id, TaskStatus.NEW);
-        this.updateStatus();
     }
 
     public Epic(String name, String description) {
@@ -58,12 +57,6 @@ public class Epic extends Task {
         this.subtasks.put(subtask.getId(), subtask.getStatus());
         this.updateStatus();
         return true;
-    }
-
-    public void setSubtasks(HashMap<Integer, TaskStatus> subtasks) {
-        this.subtasks.clear();
-        this.subtasks.putAll(subtasks);
-        this.updateStatus();
     }
 
     public boolean removeSubtask(Subtask subtask) {

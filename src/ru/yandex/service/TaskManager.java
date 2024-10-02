@@ -4,7 +4,6 @@ import ru.yandex.exceptions.TaskNotFoundException;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
-import ru.yandex.model.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,11 +13,7 @@ public class TaskManager {
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private int freeId;
-
-    public TaskManager() {
-        freeId = 0;
-    }
+    private int freeId = 0;
 
     // методы добавления возвращают id добавленного элемента
 
@@ -63,6 +58,7 @@ public class TaskManager {
                     + ": такой подзадачи не существует!");
         }
         epics.get(subtask.getEpicId()).updateSubtask(subtask);
+        subtasks.put(subtask.getId(), subtask);
     }
 
     public void updateEpic(Epic epic) throws TaskNotFoundException {
@@ -70,9 +66,10 @@ public class TaskManager {
             throw new TaskNotFoundException("Невозможно обновить эпик #" + String.format("%08d", epic.getId())
                     + ": такого эпика не существует!");
         }
-        HashMap<Integer, TaskStatus> subtasks = epics.get(epic.getId()).getSubtasks();
-        epic.setSubtasks(subtasks);
-        epics.put(epic.getId(), new Epic(epic.getName(), epic.getDescription(), epic.getId()));
+        Epic oldEpic = epics.get(epic.getId());
+        oldEpic.setName(epic.getName());
+        oldEpic.setDescription(epic.getDescription());
+        epics.put(epic.getId(), oldEpic);
     }
 
     public ArrayList<Task> getAllTasks() {

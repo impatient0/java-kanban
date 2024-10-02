@@ -1,3 +1,5 @@
+package ru.yandex;
+
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
@@ -27,7 +29,7 @@ public class Main {
                 "Изучение и анализ текущего пользовательского интерфейса приложения для выявления недостатков и "
                         + "возможностей для улучшения.", e2));
         System.out.println("Изначальный список задач:");
-        Tester.show(taskManager);
+        show(taskManager);
         taskManager.updateTask(
                 new Task("Подготовка к экзамену", "Составить план подготовки к экзамену и повесить на холодильник.", t1,
                         TaskStatus.IN_PROGRESS));
@@ -36,18 +38,16 @@ public class Main {
                 TaskStatus.IN_PROGRESS, e1));
         taskManager.removeSubtask(s3);
         System.out.println("\nОбновили задачу #00000000 и подзадачу #00000004, а также удалили подзадачу #00000006:");
-        Tester.show(taskManager);
+        show(taskManager);
         taskManager.removeEpic(e1);
         taskManager.removeTask(t2);
         System.out.println("\nУдалили задачу #00000001 и эпик #00000002:");
-        Tester.show(taskManager);
+        show(taskManager);
         taskManager.clearEpics();
         System.out.println("\nОчистили эпики:");
-        Tester.show(taskManager);
+        show(taskManager);
     }
-}
 
-class Tester {
     public static void show(TaskManager taskManager) {
         System.out.println("Задачи:");
         System.out.println(
