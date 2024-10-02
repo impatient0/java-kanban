@@ -23,7 +23,7 @@ public class Epic extends Task {
 
     private void updateStatus() {
         if (subtasks.isEmpty()) {
-            this.status = TaskStatus.DONE;
+            this.status = TaskStatus.NEW;
             return;
         }
         if (subtasks.values().stream().allMatch(TaskStatus.NEW::equals)) {
@@ -44,7 +44,7 @@ public class Epic extends Task {
     public boolean addSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
             subtasks.put(subtask.getId(), subtask.getStatus());
-            this.updateStatus();
+            updateStatus();
             return true;
         }
         return false;
@@ -55,20 +55,20 @@ public class Epic extends Task {
             return false;
         }
         this.subtasks.put(subtask.getId(), subtask.getStatus());
-        this.updateStatus();
+        updateStatus();
         return true;
     }
 
     public boolean removeSubtask(Subtask subtask) {
         boolean result = subtasks.remove(subtask.getId()) != null;
         if (result) {
-            this.updateStatus();
+            updateStatus();
         }
         return result;
     }
 
     public void clearSubtasks() {
-        this.status = TaskStatus.DONE;
+        this.status = TaskStatus.NEW;
         subtasks.clear();
     }
 }

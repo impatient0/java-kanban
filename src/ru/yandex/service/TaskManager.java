@@ -142,9 +142,9 @@ public class TaskManager {
         return true;
     }
 
-    public ArrayList<Subtask> getSubtasks(int id) {
+    public HashMap<Integer, Subtask> getSubtasks(int id) {
         Epic epic = epics.get(id);
-        return epic == null ? null : epic.getSubtasks().keySet().stream().map(subtasks::get)
-                .collect(Collectors.toCollection(ArrayList::new));
+        return epic == null ? new HashMap<>() : (HashMap<Integer, Subtask>) epic.getSubtasks().keySet().stream()
+                .collect(Collectors.toMap(i -> i, subtasks::get));
     }
 }

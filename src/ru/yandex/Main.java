@@ -39,6 +39,8 @@ public class Main {
         taskManager.removeSubtask(s3);
         System.out.println("\nОбновили задачу #00000000 и подзадачу #00000004, а также удалили подзадачу #00000006:");
         show(taskManager);
+        System.out.println("\nПодзадачи эпика #00000002:");
+        System.out.println(taskManager.getSubtasks(e1));
         taskManager.removeEpic(e1);
         taskManager.removeTask(t2);
         System.out.println("\nУдалили задачу #00000001 и эпик #00000002:");
