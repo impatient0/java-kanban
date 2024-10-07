@@ -14,6 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private int freeId = 0;
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     // методы добавления возвращают id добавленного элемента
 
@@ -117,17 +118,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
-        return tasks.get(id);
+        return historyManager.add(tasks.get(id));
     }
 
     @Override
     public Epic getEpic(int id) {
-        return epics.get(id);
+        return (Epic) historyManager.add(epics.get(id));
     }
 
     @Override
     public Subtask getSubtask(int id) {
-        return subtasks.get(id);
+        return (Subtask) historyManager.add(subtasks.get(id));
     }
 
     // методы для удаления возвращают true, если элемент был удалён, и false, если элемента с таким id не было
@@ -165,5 +166,22 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.get(id);
         return epic == null ? new ArrayList<>() : epic.getSubtasks().keySet().stream().map(subtasks::get)
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @Override
+    public ArrayList<Task> getHistory() {
+        return historyManager.getHistory().stream().map(this::getAny).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private Task getAny(int id) {
+        Task task = tasks.get(id);
+        if (task != null) {
+            return task;
+        }
+        Epic epic = epics.get(id);
+        if (epic != null) {
+            return epic;
+        }
+        return subtasks.get(id);
     }
 }
