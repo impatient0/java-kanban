@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
         int t1 = taskManager.addTask(new Task("Подготовка к экзамену", "Составить план подготовки к экзамену."));
         int t2 = taskManager.addTask(
                 new Task("Ремонт в детской комнате", "Составить список необходимых материалов и инструментов."));
@@ -50,7 +50,7 @@ public class Main {
         show(taskManager);
     }
 
-    public static void show(TaskManager taskManager) {
+    public static void show(InMemoryTaskManager taskManager) {
         System.out.println("Задачи:");
         System.out.println(
                 taskManager.getAllTasks().stream().map(t -> "\t" + t.toString()).collect(Collectors.joining("\n")));
