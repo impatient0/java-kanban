@@ -1,18 +1,23 @@
 package ru.yandex.model;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
 
     private static Epic epic;
-    private static final Subtask subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.NEW, 42);
-    private static final Subtask subtask2 = new Subtask("_s2name_", "_s2desc_", 2, TaskStatus.NEW, 42);
-    private static final Subtask subtask3 = new Subtask("_s3name_", "_s3desc_", 3, TaskStatus.IN_PROGRESS, 42);
+    private static Subtask subtask1;
+    private static Subtask subtask2;
+    private static Subtask subtask3;
 
     @BeforeEach
     void fillSubtasks() {
+        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.NEW, 42);
+        subtask2 = new Subtask("_s2name_", "_s2desc_", 2, TaskStatus.NEW, 42);
+        subtask3 = new Subtask("_s3name_", "_s3desc_", 3, TaskStatus.IN_PROGRESS, 42);
         epic = new Epic("_ename_", "_edesc_", 42);
         epic.addSubtask(subtask1);
         epic.addSubtask(subtask2);
@@ -41,6 +46,11 @@ class EpicTest {
     }
 
     @Test
+    void shouldReturnFalseIfAddingAlreadyPresentSubtask() {
+        assertFalse(epic.addSubtask(subtask2));
+    }
+
+    @Test
     void shouldRemoveSubtask() {
         epic.removeSubtask(subtask2);
         assertFalse(epic.getSubtasks().containsKey(2));
@@ -50,5 +60,18 @@ class EpicTest {
     void shouldClearSubtasks() {
         epic.clearSubtasks();
         assertEquals(epic.getSubtasks().values().size(), 0);
+    }
+
+    @Test
+    void shouldUpdateSubtask() {
+        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.DONE, 42);
+        epic.updateSubtask(subtask1);
+        assertEquals(epic.getSubtasks().get(1), TaskStatus.DONE);
+    }
+
+    @Test
+    void shouldTreatEpicsWithSameIdAsEqual() {
+        Epic anotherEpic = new Epic("_anotherename_", "_anotheredesc_", 42);
+        assertEquals(epic, anotherEpic);
     }
 }
