@@ -9,19 +9,17 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class InMemoryHistoryManagerTest {
 
-    private static final TaskManager taskManager = new InMemoryTaskManager();
+    private static final HistoryManager historyManager = new InMemoryHistoryManager();
     private static final Task task1 = new Task("_t1name_", "_t1desc_");
     private static final Task task2 = new Task("_t2name_", "_t2desc_");
 
     @Test
     void shouldStoreUpTo10ItemsInHistory() {
-        int firstTaskId = taskManager.addTask(task1);
-        int secondTaskId = taskManager.addTask(task2);
-        taskManager.getTask(firstTaskId);
+        historyManager.add(task1);
         for (int i = 0; i < 10; i++) {
-            taskManager.getTask(secondTaskId);
+            historyManager.add(task2);
         }
-        ArrayList<Task> history = taskManager.getHistory();
+        ArrayList<Task> history = historyManager.getHistory();
         assertArrayEquals(new Task[]{task2, task2, task2, task2, task2, task2, task2, task2, task2, task2},
                 history.toArray());
     }
