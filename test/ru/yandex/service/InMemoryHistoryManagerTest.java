@@ -26,5 +26,3 @@ class InMemoryHistoryManagerTest {
                 history.toArray());
     }
 }
-
-// ???
