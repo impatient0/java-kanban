@@ -28,14 +28,22 @@ public class Main {
                         + "возможностей для улучшения.", e2));
         System.out.println("Изначальный список задач:");
         show(taskManager);
+        taskManager.getTask(t1);
+        taskManager.getSubtask(s1);
+        System.out.println("\nПосмотрели задачу #00000000 и подзадачу #00000003:");
+        show(taskManager);
         taskManager.updateTask(
                 new Task("Подготовка к экзамену", "Составить план подготовки к экзамену и повесить на холодильник.", t1,
                         TaskStatus.IN_PROGRESS));
         taskManager.updateSubtask(new Subtask("Разработка рекомендаций",
                 "Подготовка предложений по улучшению рабочих процессов на основе проведённого анализа.", s2,
                 TaskStatus.IN_PROGRESS, e1));
+        taskManager.getEpic(e1);
+        taskManager.getTask(t1);
+        taskManager.getSubtask(s3);
         taskManager.removeSubtask(s3);
-        System.out.println("\nОбновили задачу #00000000 и подзадачу #00000004, а также удалили подзадачу #00000006:");
+        System.out.println(
+                "\nОбновили задачу #00000000 и подзадачу #00000004, посмотрели эпик #00000002, задачу #00000000 (после обновления) и подзадачу #00000006, а также удалили подзадачу #00000006:");
         show(taskManager);
         System.out.println("\nПодзадачи эпика #00000002:");
         System.out.println(taskManager.getSubtasks(e1));
@@ -58,5 +66,8 @@ public class Main {
         System.out.println("Подзадачи:");
         System.out.println(
                 taskManager.getAllSubtasks().stream().map(t -> "\t" + t.toString()).collect(Collectors.joining("\n")));
+        System.out.println("История просмотров:");
+        System.out.println(
+                taskManager.getHistory().stream().map(t -> "\t" + t.toString()).collect(Collectors.joining("\n")));
     }
 }
