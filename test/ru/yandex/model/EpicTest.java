@@ -1,6 +1,5 @@
 package ru.yandex.model;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +13,7 @@ class EpicTest {
     private static Subtask subtask3;
 
     @BeforeEach
-    void fillSubtasks() {
+    void setUp() {
         subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.NEW, 42);
         subtask2 = new Subtask("_s2name_", "_s2desc_", 2, TaskStatus.NEW, 42);
         subtask3 = new Subtask("_s3name_", "_s3desc_", 3, TaskStatus.IN_PROGRESS, 42);
@@ -23,12 +22,8 @@ class EpicTest {
         epic.addSubtask(subtask2);
     }
 
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
-    void shouldConvertToString() {
+    void shouldConvertEpicToString() {
         String s = "Эпик #00000042 \"_ename_\": _edesc_ Статус: NEW; Подзадачи: #00000001, #00000002";
         assertEquals(s, epic.toString());
     }
@@ -74,4 +69,12 @@ class EpicTest {
         Epic anotherEpic = new Epic("_anotherename_", "_anotheredesc_", 42);
         assertEquals(epic, anotherEpic);
     }
+
+    // не вполне понятно, как проверить, что эпик нельзя назначить своей же собственной подзадачей: т.к. addSubtask()
+    // принимает аргумент типа Subtask, при попытке передать туда Epic код просто не скомпилируется
+
+    /*@Test
+    void shouldNotAllowAddingEpicAsItsOwnSubtask() {
+        epic.addSubtask(epic);
+    }*/
 }

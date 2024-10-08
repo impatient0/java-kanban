@@ -170,18 +170,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Task> getHistory() {
-        return historyManager.getHistory().stream().map(this::getAny).collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    private Task getAny(int id) {
-        Task task = tasks.get(id);
-        if (task != null) {
-            return task;
-        }
-        Epic epic = epics.get(id);
-        if (epic != null) {
-            return epic;
-        }
-        return subtasks.get(id);
+        return historyManager.getHistory();
     }
 }
