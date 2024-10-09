@@ -54,7 +54,7 @@ class EpicTest {
     @Test
     void shouldClearSubtasks() {
         epic.clearSubtasks();
-        assertEquals(epic.getSubtasks().values().size(), 0);
+        assertTrue(epic.getSubtasks().isEmpty());
     }
 
     @Test
@@ -68,6 +68,20 @@ class EpicTest {
     void shouldTreatEpicsWithSameIdAsEqual() {
         Epic anotherEpic = new Epic("_anotherename_", "_anotheredesc_", 42);
         assertEquals(epic, anotherEpic);
+    }
+
+    @Test
+    void shouldNotCreateSharedReferencesWhenCloning() throws CloneNotSupportedException {
+        epic.addSubtask(subtask3);
+        Epic clonedEpic = epic.clone();
+        epic.removeSubtask(subtask1);
+        assertTrue(clonedEpic.getSubtasks().containsKey(subtask1.getId()));
+        clonedEpic.removeSubtask(subtask3);
+        assertTrue(epic.getSubtasks().containsKey(subtask3.getId()));
+        clonedEpic.updateSubtask(new Subtask(subtask2.getName(), subtask2.getDescription(), subtask2.getId(), TaskStatus.DONE, epic.getId()));
+        assertEquals(TaskStatus.NEW, epic.getSubtasks().get(subtask2.getId()));
+        epic.clearSubtasks();
+        assertFalse(clonedEpic.getSubtasks().isEmpty());
     }
 
     // не вполне понятно, как проверить, что эпик нельзя назначить своей же собственной подзадачей: т.к. addSubtask()
