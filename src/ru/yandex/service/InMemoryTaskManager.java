@@ -1,5 +1,6 @@
 package ru.yandex.service;
 
+import org.jetbrains.annotations.NotNull;
 import ru.yandex.exceptions.TaskNotFoundException;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
@@ -7,6 +8,7 @@ import ru.yandex.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -19,7 +21,7 @@ public class InMemoryTaskManager implements TaskManager {
     // методы добавления возвращают id добавленного элемента
 
     @Override
-    public int addTask(Task task) {
+    public int addTask(@NotNull Task task) {
         int id = freeId++;
         task.setId(id);
         tasks.put(id, task);
@@ -27,7 +29,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addSubtask(Subtask subtask) throws TaskNotFoundException {
+    public int addSubtask(@NotNull Subtask subtask) throws TaskNotFoundException {
         if (!epics.containsKey(subtask.getEpicId())) {
             throw new TaskNotFoundException(
                     "Невозможно добавить подзадачу к эпику #" + String.format("%08d", subtask.getEpicId())
@@ -41,7 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addEpic(Epic epic) {
+    public int addEpic(@NotNull Epic epic) {
         int id = freeId++;
         epic.setId(id);
         epics.put(id, epic);
@@ -49,7 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) throws TaskNotFoundException {
+    public void updateTask(@NotNull Task task) throws TaskNotFoundException {
         if (!tasks.containsKey(task.getId())) {
             throw new TaskNotFoundException("Невозможно обновить задачу #" + String.format("%08d", task.getId())
                     + ": такой задачи не существует!");
@@ -58,7 +60,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) throws TaskNotFoundException {
+    public void updateSubtask(@NotNull Subtask subtask) throws TaskNotFoundException {
         if (!subtasks.containsKey(subtask.getId())) {
             throw new TaskNotFoundException("Невозможно обновить подзадачу #" + String.format("%08d", subtask.getId())
                     + ": такой подзадачи не существует!");
@@ -68,7 +70,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(Epic epic) throws TaskNotFoundException {
+    public void updateEpic(@NotNull Epic epic) throws TaskNotFoundException {
         if (!epics.containsKey(epic.getId())) {
             throw new TaskNotFoundException("Невозможно обновить эпик #" + String.format("%08d", epic.getId())
                     + ": такого эпика не существует!");
@@ -118,17 +120,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
-        return historyManager.add(tasks.get(id));
+        Task task = tasks.get(id);
+        historyManager.add(task);
+        return task;
     }
 
     @Override
     public Epic getEpic(int id) {
-        return (Epic) historyManager.add(epics.get(id));
+        Epic epic = epics.get(id);
+        historyManager.add(epic);
+        return epic;
     }
 
     @Override
     public Subtask getSubtask(int id) {
-        return (Subtask) historyManager.add(subtasks.get(id));
+        Subtask subtask = subtasks.get(id);
+        historyManager.add(subtask);
+        return subtask;
     }
 
     // методы для удаления возвращают true, если элемент был удалён, и false, если элемента с таким id не было
@@ -169,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 }

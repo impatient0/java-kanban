@@ -2,10 +2,10 @@ package ru.yandex.service;
 
 import ru.yandex.model.Task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface HistoryManager {
-    Task add(Task task);
+    void add(Task task);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }

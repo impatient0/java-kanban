@@ -1,29 +1,30 @@
 package ru.yandex.service;
 
+import org.jetbrains.annotations.NotNull;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
-    int addTask(Task task);
+    int addTask(@NotNull Task task);
 
-    int addSubtask(Subtask subtask);
+    int addSubtask(@NotNull Subtask subtask);
 
-    int addEpic(Epic epic);
+    int addEpic(@NotNull Epic epic);
 
-    void updateTask(Task task);
+    void updateTask(@NotNull Task task);
 
-    void updateSubtask(Subtask subtask);
+    void updateSubtask(@NotNull Subtask subtask);
 
-    void updateEpic(Epic epic);
+    void updateEpic(@NotNull Epic epic);
 
-    ArrayList<Task> getAllTasks();
+    List<Task> getAllTasks();
 
-    ArrayList<Epic> getAllEpics();
+    List<Epic> getAllEpics();
 
-    ArrayList<Subtask> getAllSubtasks();
+    List<Subtask> getAllSubtasks();
 
     void clearTasks();
 
@@ -43,7 +44,7 @@ public interface TaskManager {
 
     boolean removeSubtask(int id);
 
-    ArrayList<Subtask> getSubtasks(int id);
+    List<Subtask> getSubtasks(int id);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }
