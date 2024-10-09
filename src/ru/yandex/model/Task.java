@@ -2,7 +2,7 @@ package ru.yandex.model;
 
 import java.util.Objects;
 
-public class Task {
+public class Task implements Cloneable {
     protected String name;
     protected String description;
     protected int id;
@@ -67,5 +67,13 @@ public class Task {
     @Override
     public String toString() {
         return "Задача #" + String.format("%08d", id) + " \"" + name + "\": " + description + " Статус: " + status;
+    }
+
+    @Override
+    public Task clone() throws CloneNotSupportedException {
+        Task clone = (Task) super.clone();
+        clone.name = name;
+        clone.description = description;
+        return clone;
     }
 }

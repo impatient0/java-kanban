@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class Epic extends Task {
-    private final HashMap<Integer, TaskStatus> subtasks = new HashMap<>();
+    private HashMap<Integer, TaskStatus> subtasks = new HashMap<>();
 
     public Epic(String name, String description, int id) {
         super(name, description, id, TaskStatus.NEW);
@@ -70,5 +70,16 @@ public class Epic extends Task {
     public void clearSubtasks() {
         this.status = TaskStatus.NEW;
         subtasks.clear();
+    }
+
+    @Override
+    public Epic clone() throws CloneNotSupportedException {
+        Epic clone = (Epic) super.clone();
+        HashMap<Integer, TaskStatus> clonedSubtasks = new HashMap<>();
+        for (Integer id : this.subtasks.keySet()) {
+            clonedSubtasks.put(id, this.subtasks.get(id));
+        }
+        clone.subtasks = clonedSubtasks;
+        return clone;
     }
 }
