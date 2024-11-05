@@ -166,6 +166,7 @@ class InMemoryTaskManagerTest {
         taskManager.removeSubtask(secondSubtaskId);
         assertEquals(numberOfSubtasksSnapshot - 1, taskManager.getAllSubtasks().size());
         assertNull(taskManager.getSubtask(secondSubtaskId));
+        assertFalse(taskManager.getEpic(epicId).getSubtasks().containsKey(secondSubtaskId));
     }
 
     @Test
