@@ -35,7 +35,9 @@ public class Main {
         taskManager.getSubtask(s1);
         taskManager.getSubtask(s3);
         showHistory(taskManager);
-        System.out.println("\nЗапрашиваем задачу #00000001, эпик #00000003 и подзадачу #00000005, ещё раз запрашиваем подзадачу #00000004 и эпик #00000002:");
+        System.out.println(
+                "\nЗапрашиваем задачу #00000001, эпик #00000003 и подзадачу #00000005, ещё раз запрашиваем подзадачу "
+                        + "#00000004 и эпик #00000002:");
         taskManager.getTask(t2);
         taskManager.getEpic(e2);
         taskManager.getSubtask(s2);
