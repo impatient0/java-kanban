@@ -22,17 +22,17 @@ public class TaskList {
         size++;
     }
 
-    public Task get(int index) {
-        return indexMap.get(index).data;
-    }
-
     public void remove(int id) {
         Node<Task> toRemove = indexMap.get(id);
         if (toRemove == null) {
             return;
         }
-        toRemove.previous.next = toRemove.next;
-        toRemove.next.previous = toRemove.previous;
+        if (toRemove.previous != null) {
+            toRemove.previous.next = toRemove.next;
+        }
+        if (toRemove.next != null) {
+            toRemove.next.previous = toRemove.previous;
+        }
     }
 
     public List<Task> toList() {

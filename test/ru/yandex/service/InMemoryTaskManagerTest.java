@@ -197,6 +197,19 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void shouldProperlyUpdateRepeatingHistoryEntries() {
+        Task task1 = new Task("_t1name_", "_t1desc_");
+        Task task2 = new Task("_t2name_", "_t2desc_");
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskManager.getTask(task1.getId());
+        taskManager.getTask(task2.getId());
+        taskManager.getTask(task1.getId());
+        List<Task> history = taskManager.getHistory();
+        assertArrayEquals(new Task[]{task2, task1}, history.toArray());
+    }
+
+    @Test
     void shouldStoreUnmodifiedVersionsOfTasksInHistory() {
         Task task = new Task("_t1name_", "_t1desc_");
         int taskId = taskManager.addTask(task);
