@@ -120,7 +120,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
-        historyManager.remove(id);
         historyManager.add(task);
         return task;
     }
@@ -128,7 +127,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpic(int id) {
         Epic epic = epics.get(id);
-        historyManager.remove(id);
         historyManager.add(epic);
         return epic;
     }
@@ -136,7 +134,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = subtasks.get(id);
-        historyManager.remove(id);
         historyManager.add(subtask);
         return subtask;
     }
@@ -154,10 +151,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (!epics.containsKey(id)) {
             return false;
         }
-        List<Integer> subtasksToDelete = new ArrayList<>(epics.get(id).getSubtasks()
-                .keySet()); // т.к. сам keySet изменяется в цикле for, нужна независимая копия
-        for (int s : subtasksToDelete) {
-            removeSubtask(s);
+        for (int s : epics.get(id).getSubtasks().keySet()) {
+            historyManager.remove(s);
+            subtasks.remove(s);
         }
         historyManager.remove(id);
         epics.remove(id);

@@ -5,21 +5,19 @@ import ru.yandex.model.Task;
 import java.util.*;
 
 public class TaskList {
-
-    private int size = 0;
     private final Map<Integer, Node<Task>> indexMap = new HashMap<>();
-    private Node<Task> last = null;
+    private Node<Task> first = null, last = null;
 
     public void addLast(Task task) {
-        if (size == 0) {
+        if (first == null) {
             last = new Node<>(null, task, null);
+            first = last;
         } else {
             Node<Task> prevLast = last;
             last = new Node<>(prevLast, task, null);
             prevLast.next = last;
         }
         indexMap.put(task.getId(), last);
-        size++;
     }
 
     public void remove(int id) {
@@ -27,26 +25,26 @@ public class TaskList {
         if (toRemove == null) {
             return;
         }
-        if (toRemove.previous != null) {
+        if (toRemove.previous == null) {
+            first = toRemove.next;
+        } else {
             toRemove.previous.next = toRemove.next;
         }
-        if (toRemove.next != null) {
+        if (toRemove.next == null) {
+            last = toRemove.previous;
+        } else {
             toRemove.next.previous = toRemove.previous;
         }
     }
 
     public List<Task> toList() {
         ArrayList<Task> result = new ArrayList<>();
-        Node<Task> n = last;
+        Node<Task> n = first;
         while (n != null) {
             result.add(n.data);
-            n = n.previous;
+            n = n.next;
         }
-        return result.reversed();
-    }
-
-    public int size() {
-        return size;
+        return result;
     }
 
     private static class Node<E> {

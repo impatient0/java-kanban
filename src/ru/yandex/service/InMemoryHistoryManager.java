@@ -15,14 +15,12 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             return;
         }
+        history.remove(task.getId());
         history.addLast(task);
     }
 
     @Override
     public void remove(int id) {
-        if (id > history.size() || id < 0) {
-            return;
-        }
         history.remove(id);
     }
 
