@@ -97,6 +97,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTasks() {
+        for (int id : tasks.keySet()) {
+            historyManager.remove(id);
+        }
         tasks.clear();
     }
 
@@ -105,12 +108,21 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics.values()) {
             epic.clearSubtasks();
         }
+        for (int id : subtasks.keySet()) {
+            historyManager.remove(id);
+        }
         subtasks.clear();
     }
 
     @Override
     public void clearEpics() {
         // подзадачи не могут существовать без эпиков, поэтому также удаляются
+        for (int id : subtasks.keySet()) {
+            historyManager.remove(id);
+        }
+        for (int id : epics.keySet()) {
+            historyManager.remove(id);
+        }
         subtasks.clear();
         epics.clear();
     }
