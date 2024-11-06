@@ -221,6 +221,7 @@ class InMemoryTaskManagerTest {
         taskManager.getTask(taskId);
         taskManager.getEpic(epicId);
         taskManager.getSubtask(subtaskId);
+        List<Task> history_ = taskManager.getHistory();
         Task anotherTask = new Task("_anothertname_", "_anothertdesc_", taskId, TaskStatus.IN_PROGRESS);
         taskManager.updateTask(anotherTask);
         taskManager.removeEpic(epicId);
