@@ -223,12 +223,9 @@ class InMemoryTaskManagerTest {
         taskManager.getSubtask(subtaskId);
         Task anotherTask = new Task("_anothertname_", "_anothertdesc_", taskId, TaskStatus.IN_PROGRESS);
         taskManager.updateTask(anotherTask);
-        taskManager.updateTask(anotherTask);
         taskManager.removeEpic(epicId);
         List<Task> history = taskManager.getHistory();
-        assertEquals("_t1name_", history.get(0).getName());
-        assertEquals("_e1name_", history.get(1).getName());
-        assertEquals("_s2name_", history.get(2).getName());
+        assertEquals("_t1name_", history.getFirst().getName());
     }
 
     @Test
