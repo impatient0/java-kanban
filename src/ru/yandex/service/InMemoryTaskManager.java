@@ -1,6 +1,5 @@
 package ru.yandex.service;
 
-import org.jetbrains.annotations.NotNull;
 import ru.yandex.exceptions.TaskNotFoundException;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
@@ -21,7 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
     // методы добавления возвращают id добавленного элемента
 
     @Override
-    public int addTask(@NotNull Task task) {
+    public int addTask(Task task) {
         int id = freeId++;
         task.setId(id);
         tasks.put(id, task);
@@ -29,7 +28,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addSubtask(@NotNull Subtask subtask) throws TaskNotFoundException {
+    public int addSubtask(Subtask subtask) throws TaskNotFoundException {
         if (!epics.containsKey(subtask.getEpicId())) {
             throw new TaskNotFoundException(
                     "Невозможно добавить подзадачу к эпику #" + String.format("%08d", subtask.getEpicId())
@@ -43,7 +42,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addEpic(@NotNull Epic epic) {
+    public int addEpic(Epic epic) {
         int id = freeId++;
         epic.setId(id);
         epics.put(id, epic);
@@ -51,7 +50,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(@NotNull Task task) throws TaskNotFoundException {
+    public void updateTask(Task task) throws TaskNotFoundException {
         if (!tasks.containsKey(task.getId())) {
             throw new TaskNotFoundException("Невозможно обновить задачу #" + String.format("%08d", task.getId())
                     + ": такой задачи не существует!");
@@ -60,7 +59,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(@NotNull Subtask subtask) throws TaskNotFoundException {
+    public void updateSubtask(Subtask subtask) throws TaskNotFoundException {
         if (!subtasks.containsKey(subtask.getId())) {
             throw new TaskNotFoundException("Невозможно обновить подзадачу #" + String.format("%08d", subtask.getId())
                     + ": такой подзадачи не существует!");
@@ -70,7 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(@NotNull Epic epic) throws TaskNotFoundException {
+    public void updateEpic(Epic epic) throws TaskNotFoundException {
         if (!epics.containsKey(epic.getId())) {
             throw new TaskNotFoundException("Невозможно обновить эпик #" + String.format("%08d", epic.getId())
                     + ": такого эпика не существует!");
@@ -98,6 +97,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTasks() {
+        for (int id : tasks.keySet()) {
+            historyManager.remove(id);
+        }
         tasks.clear();
     }
 
@@ -106,12 +108,21 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics.values()) {
             epic.clearSubtasks();
         }
+        for (int id : subtasks.keySet()) {
+            historyManager.remove(id);
+        }
         subtasks.clear();
     }
 
     @Override
     public void clearEpics() {
         // подзадачи не могут существовать без эпиков, поэтому также удаляются
+        for (int id : subtasks.keySet()) {
+            historyManager.remove(id);
+        }
+        for (int id : epics.keySet()) {
+            historyManager.remove(id);
+        }
         subtasks.clear();
         epics.clear();
     }
@@ -143,6 +154,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean removeTask(int id) {
+        historyManager.remove(id);
         return tasks.remove(id) != null;
     }
 
@@ -152,8 +164,10 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         }
         for (int s : epics.get(id).getSubtasks().keySet()) {
+            historyManager.remove(s);
             subtasks.remove(s);
         }
+        historyManager.remove(id);
         epics.remove(id);
         return true;
     }
@@ -165,6 +179,7 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         }
         epics.get(subtask.getEpicId()).removeSubtask(subtask);
+        historyManager.remove(id);
         subtasks.remove(id);
         return true;
     }

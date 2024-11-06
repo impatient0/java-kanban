@@ -1,6 +1,5 @@
 package ru.yandex.service;
 
-import org.jetbrains.annotations.NotNull;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
@@ -8,17 +7,17 @@ import ru.yandex.model.Task;
 import java.util.List;
 
 public interface TaskManager {
-    int addTask(@NotNull Task task);
+    int addTask(Task task);
 
-    int addSubtask(@NotNull Subtask subtask);
+    int addSubtask(Subtask subtask);
 
-    int addEpic(@NotNull Epic epic);
+    int addEpic(Epic epic);
 
-    void updateTask(@NotNull Task task);
+    void updateTask(Task task);
 
-    void updateSubtask(@NotNull Subtask subtask);
+    void updateSubtask(Subtask subtask);
 
-    void updateEpic(@NotNull Epic epic);
+    void updateEpic(Epic epic);
 
     List<Task> getAllTasks();
 

@@ -89,30 +89,40 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldClearTasks() {
-        taskManager.addTask(new Task("_t1name_", "_t1desc_"));
-        taskManager.addTask(new Task("_t2name_", "_t2desc_"));
+        int firstTaskId = taskManager.addTask(new Task("_t1name_", "_t1desc_"));
+        int secondTaskId = taskManager.addTask(new Task("_t2name_", "_t2desc_"));
+        taskManager.getTask(firstTaskId);
+        taskManager.getTask(secondTaskId);
         taskManager.clearTasks();
         assertTrue(taskManager.getAllTasks().isEmpty());
+        assertTrue(taskManager.getHistory().isEmpty());
     }
 
     @Test
     void shouldClearSubtasksAndRemoveThemFromEpics() {
         int firstEpicId = taskManager.addEpic(new Epic("_e1name_", "_e1desc_"));
-        taskManager.addSubtask(new Subtask("_s1name_", "_s1desc_", firstEpicId));
-        taskManager.addSubtask(new Subtask("_s2name_", "_s2desc_", firstEpicId));
+        int firstSubtaskId = taskManager.addSubtask(new Subtask("_s1name_", "_s1desc_", firstEpicId));
+        int secondSubtaskId = taskManager.addSubtask(new Subtask("_s2name_", "_s2desc_", firstEpicId));
+        taskManager.getSubtask(firstSubtaskId);
+        taskManager.getSubtask(secondSubtaskId);
         taskManager.clearSubtasks();
         assertTrue(taskManager.getSubtasks(firstEpicId).isEmpty());
         assertTrue(taskManager.getAllSubtasks().isEmpty());
+        assertTrue(taskManager.getHistory().isEmpty());
     }
 
     @Test
     void shouldClearEpicsAndRemoveAllSubtasks() {
         int firstEpicId = taskManager.addEpic(new Epic("_e1name_", "_e1desc_"));
-        taskManager.addSubtask(new Subtask("_s1name_", "_s1desc_", firstEpicId));
-        taskManager.addSubtask(new Subtask("_s2name_", "_s2desc_", firstEpicId));
+        int firstSubtaskId = taskManager.addSubtask(new Subtask("_s1name_", "_s1desc_", firstEpicId));
+        int secondSubtaskId = taskManager.addSubtask(new Subtask("_s2name_", "_s2desc_", firstEpicId));
+        taskManager.getEpic(firstEpicId);
+        taskManager.getSubtask(firstSubtaskId);
+        taskManager.getSubtask(secondSubtaskId);
         taskManager.clearEpics();
         assertTrue(taskManager.getAllEpics().isEmpty());
         assertTrue(taskManager.getAllSubtasks().isEmpty());
+        assertTrue(taskManager.getHistory().isEmpty());
     }
 
     @Test
@@ -166,6 +176,7 @@ class InMemoryTaskManagerTest {
         taskManager.removeSubtask(secondSubtaskId);
         assertEquals(numberOfSubtasksSnapshot - 1, taskManager.getAllSubtasks().size());
         assertNull(taskManager.getSubtask(secondSubtaskId));
+        assertFalse(taskManager.getEpic(epicId).getSubtasks().containsKey(secondSubtaskId));
     }
 
     @Test
@@ -197,6 +208,19 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    void shouldProperlyUpdateRepeatingHistoryEntries() {
+        Task task1 = new Task("_t1name_", "_t1desc_");
+        Task task2 = new Task("_t2name_", "_t2desc_");
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskManager.getTask(task1.getId());
+        taskManager.getTask(task2.getId());
+        taskManager.getTask(task1.getId());
+        List<Task> history = taskManager.getHistory();
+        assertArrayEquals(new Task[]{task2, task1}, history.toArray());
+    }
+
+    @Test
     void shouldStoreUnmodifiedVersionsOfTasksInHistory() {
         Task task = new Task("_t1name_", "_t1desc_");
         int taskId = taskManager.addTask(task);
@@ -209,12 +233,9 @@ class InMemoryTaskManagerTest {
         taskManager.getSubtask(subtaskId);
         Task anotherTask = new Task("_anothertname_", "_anothertdesc_", taskId, TaskStatus.IN_PROGRESS);
         taskManager.updateTask(anotherTask);
-        taskManager.updateTask(anotherTask);
         taskManager.removeEpic(epicId);
         List<Task> history = taskManager.getHistory();
-        assertEquals("_t1name_", history.get(0).getName());
-        assertEquals("_e1name_", history.get(1).getName());
-        assertEquals("_s2name_", history.get(2).getName());
+        assertEquals("_t1name_", history.getFirst().getName());
     }
 
     @Test
