@@ -23,10 +23,10 @@ class ManagersTest {
 
     @Test
     void shouldReturnWorkingHistoryManager() {
-         HistoryManager historyManager = Managers.getDefaultHistory();
-         assertTrue(historyManager.getHistory().isEmpty());
-         Task task = new Task("_tname_", "_tdesc_");
-         historyManager.add(task);
-         assertTrue(historyManager.getHistory().contains(task));
+        HistoryManager historyManager = Managers.getDefaultHistory();
+        assertTrue(historyManager.getHistory().isEmpty());
+        Task task = new Task("_tname_", "_tdesc_");
+        historyManager.add(task);
+        assertTrue(historyManager.getHistory().contains(task));
     }
 }
