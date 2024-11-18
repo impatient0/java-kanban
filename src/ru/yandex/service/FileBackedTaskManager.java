@@ -81,11 +81,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             while (curId < tasks.size() + epics.size() + subtasks.size()) {
                 Task task = tasks.get(curId), epic = epics.get(curId), subtask = subtasks.get(curId);
                 Task curTask = task != null ? task : (epic != null ? epic : subtask);
-                String type = task != null ? "task" : (epic != null ? "epic" : "subtask");
-                print.println(
-                        String.format("%d,%s,%s,%s,%s,", curTask.getId(), type, curTask.getName(), curTask.getStatus(),
-                                curTask.getDescription()) + (curTask instanceof Subtask ?
-                                subtasks.get(curId).getEpicId() : ""));
+                print.println(curTask.getCSV());
                 curId++;
             }
         } catch (IOException e) {

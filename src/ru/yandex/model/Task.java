@@ -69,6 +69,10 @@ public class Task implements Cloneable {
         return "Задача #" + String.format("%08d", id) + " \"" + name + "\": " + description + " Статус: " + status;
     }
 
+    public String getCSV() {
+        return String.format("%d,task,%s,%s,%s,", id, name, status, description);
+    }
+
     @Override
     public Task clone() throws CloneNotSupportedException {
         Task clone = (Task) super.clone();

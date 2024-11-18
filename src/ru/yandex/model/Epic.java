@@ -73,6 +73,11 @@ public class Epic extends Task {
     }
 
     @Override
+    public String getCSV() {
+        return super.getCSV().replace("task", "epic");
+    }
+
+    @Override
     public Epic clone() throws CloneNotSupportedException {
         Epic clone = (Epic) super.clone();
         HashMap<Integer, TaskStatus> clonedSubtasks = new HashMap<>();
