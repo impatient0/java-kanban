@@ -169,13 +169,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     public static void main(String[] args) throws IOException {
         Path saveFile = File.createTempFile("save_file", ".tmp").toPath();
-        TaskManager tm = new FileBackedTaskManager(saveFile);
-        tm.addTask(new Task("Подготовка к экзамену", "Составить план подготовки к экзамену."));
-        int e1 = tm.addEpic(new Epic("Оптимизация рабочего процесса",
+        TaskManager taskManager = new FileBackedTaskManager(saveFile);
+        int t1 = taskManager.addTask(new Task("Подготовка к экзамену", "Составить план подготовки к экзамену."));
+        int t2 = taskManager.addTask(
+                new Task("Ремонт в детской комнате", "Составить список необходимых материалов и инструментов."));
+        int e1 = taskManager.addEpic(new Epic("Оптимизация рабочего процесса",
                 "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников."));
-        tm.addSubtask(new Subtask("Анализ текущих процессов",
+        int e2 = taskManager.addEpic(new Epic("Улучшение пользовательского интерфейса",
+                "Улучшение пользовательского интерфейса приложения для повышения удобства использования и "
+                        + "привлекательности."));
+        int s1 = taskManager.addSubtask(new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
                         + "для оптимизации.", e1));
+        int s2 = taskManager.addSubtask(
+                new Subtask("Разработка рекомендаций", "Подготовка предложений по улучшению рабочих процессов.", e1));
+        int s3 = taskManager.addSubtask(new Subtask("Анализ текущего интерфейса",
+                "Изучение и анализ текущего пользовательского интерфейса приложения для выявления недостатков и "
+                        + "возможностей для улучшения.", e1));
         TaskManager tm2 = new FileBackedTaskManager(saveFile);
         showTasks(tm2);
     }
