@@ -2,6 +2,7 @@ package ru.yandex.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.exceptions.ManagerLoadException;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
@@ -19,7 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class FileBackedTaskManagerTest {
 
     private Path tmpSaveFile;
-    private final Path testSaveFile = Paths.get("test/ru/yandex/service/resource/test_save_file.txt");
+    private final Path testSaveFile = Paths.get("test/ru/yandex/service/resource/test_save_file.txt"), badSaveFile
+            = Paths.get("test/ru/yandex/service/resource/bad_save_file.txt");
 
     @BeforeEach
     void setUp() throws IOException {
@@ -67,5 +69,10 @@ class FileBackedTaskManagerTest {
             assertEquals(epic.getCSV(), input.readLine());
             assertEquals(subtask.getCSV(), input.readLine());
         }
+    }
+
+    @Test
+    void shouldThrowExceptionOnInvalidFile() {
+        assertThrows(ManagerLoadException.class, () -> new FileBackedTaskManager(badSaveFile));
     }
 }
