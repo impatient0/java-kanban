@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
     private final Path saveFile;
-    private final static String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,epic";
 
     FileBackedTaskManager(Path saveFile) {
         this.saveFile = saveFile;
