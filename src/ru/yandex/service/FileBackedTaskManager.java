@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
-public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path saveFile;
     private static final String HEADER = "id,type,name,status,description,epic";
 
@@ -21,9 +21,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             } catch (IOException e) {
                 throw new ManagerSaveException("Не удалось создать файл сохранения.");
             }
-        } else {
-            load();
         }
+    }
+
+    public static FileBackedTaskManager loadFromFile(File file) {
+        FileBackedTaskManager manager = new FileBackedTaskManager(file.toPath());
+        manager.load();
+        return manager;
     }
 
     private void load() {
@@ -76,9 +80,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try (PrintStream print = new PrintStream(saveFile.toFile())) {
             print.println(HEADER);
             int curId = 0;
-            while (curId < tasks.size() + epics.size() + subtasks.size()) {
+            while (curId < freeId) {
                 Task task = tasks.get(curId), epic = epics.get(curId), subtask = subtasks.get(curId);
                 Task curTask = task != null ? task : (epic != null ? epic : subtask);
+                if (curTask == null) {
+                    continue;
+                }
                 print.println(curTask.getCSV());
                 curId++;
             }
@@ -184,7 +191,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         int s3 = taskManager.addSubtask(new Subtask("Анализ текущего интерфейса",
                 "Изучение и анализ текущего пользовательского интерфейса приложения для выявления недостатков и "
                         + "возможностей для улучшения.", e1));
-        TaskManager tm2 = new FileBackedTaskManager(saveFile);
+        TaskManager tm2 = loadFromFile(saveFile.toFile());
         showTasks(tm2);
     }
 

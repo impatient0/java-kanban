@@ -45,7 +45,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldLoadTasksFromFile() {
-        TaskManager tm = new FileBackedTaskManager(testSaveFile);
+        TaskManager tm = FileBackedTaskManager.loadFromFile(testSaveFile.toFile());
         assertEquals(1, tm.getAllTasks().size());
         assertEquals(1, tm.getAllEpics().size());
         assertEquals(1, tm.getAllSubtasks().size());
@@ -73,6 +73,6 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldThrowExceptionOnInvalidFile() {
-        assertThrows(ManagerLoadException.class, () -> new FileBackedTaskManager(badSaveFile));
+        assertThrows(ManagerLoadException.class, () -> FileBackedTaskManager.loadFromFile(badSaveFile.toFile()));
     }
 }
