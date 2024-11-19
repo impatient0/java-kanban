@@ -74,7 +74,7 @@ public class Epic extends Task {
 
     @Override
     public String getCSV() {
-        return super.getCSV().replace("task", "epic");
+        return super.getCSV().replace(TaskType.TASK.toString(), TaskType.EPIC.toString());
     }
 
     @Override

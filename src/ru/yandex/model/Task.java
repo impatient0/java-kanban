@@ -70,7 +70,7 @@ public class Task implements Cloneable {
     }
 
     public String getCSV() {
-        return String.format("%d,task,%s,%s,%s,", id, name, status, description);
+        return String.format("%d,%s,%s,%s,%s,", id, TaskType.TASK, name, status, description);
     }
 
     @Override

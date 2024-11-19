@@ -2,10 +2,7 @@ package ru.yandex.service;
 
 import ru.yandex.exceptions.ManagerLoadException;
 import ru.yandex.exceptions.ManagerSaveException;
-import ru.yandex.model.Epic;
-import ru.yandex.model.Subtask;
-import ru.yandex.model.Task;
-import ru.yandex.model.TaskStatus;
+import ru.yandex.model.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -16,7 +13,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     private final Path saveFile;
     private static final String HEADER = "id,type,name,status,description,epic";
 
-    FileBackedTaskManager(Path saveFile) {
+    public FileBackedTaskManager(Path saveFile) {
         this.saveFile = saveFile;
         if (!Files.exists(saveFile)) {
             try {
@@ -44,21 +41,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             while (input.ready()) {
                 String[] split = input.readLine().split(",");
                 int id = Integer.parseInt(split[0]);
+                TaskType type = TaskType.valueOf(split[1]);
                 String name = split[2];
                 TaskStatus status = TaskStatus.valueOf(split[3]);
                 String description = split[4];
-                switch (split[1]) {
-                    case "task":
+                switch (type) {
+                    case TaskType.TASK:
                         Task task = new Task(name, description, id, status);
                         tasks.put(id, task);
                         freeId = Integer.max(id + 1, freeId);
                         break;
-                    case "epic":
+                    case TaskType.EPIC:
                         Epic epic = new Epic(name, description, id);
                         epics.put(id, epic);
                         freeId = Integer.max(id + 1, freeId);
                         break;
-                    case "subtask":
+                    case TaskType.SUBTASK:
                         int epicId = Integer.parseInt(split[5]);
                         Subtask subtask = new Subtask(name, description, id, status, epicId);
                         epics.get(epicId).addSubtask(subtask);

@@ -20,7 +20,7 @@ public class Subtask extends Task {
 
     @Override
     public String getCSV() {
-        return super.getCSV().replace("task", "subtask") + epicId;
+        return super.getCSV().replace(TaskType.TASK.toString(), TaskType.SUBTASK.toString()) + epicId;
     }
 
     public int getEpicId() {
