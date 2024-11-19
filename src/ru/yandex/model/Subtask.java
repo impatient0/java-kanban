@@ -18,6 +18,11 @@ public class Subtask extends Task {
                 epicId);
     }
 
+    @Override
+    public String getCSV() {
+        return super.getCSV().replace(TaskType.TASK.toString(), TaskType.SUBTASK.toString()) + epicId;
+    }
+
     public int getEpicId() {
         return epicId;
     }

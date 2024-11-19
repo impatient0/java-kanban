@@ -61,12 +61,16 @@ public class Task implements Cloneable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, id, status);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
         return "Задача #" + String.format("%08d", id) + " \"" + name + "\": " + description + " Статус: " + status;
+    }
+
+    public String getCSV() {
+        return String.format("%d,%s,%s,%s,%s,", id, TaskType.TASK, name, status, description);
     }
 
     @Override
