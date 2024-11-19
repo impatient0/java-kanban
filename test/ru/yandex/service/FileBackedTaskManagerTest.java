@@ -60,6 +60,31 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
+    void shouldSaveToAndLoadTasksFromFile() {
+        TaskManager tm = new FileBackedTaskManager(tmpSaveFile);
+        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.");
+        tm.addTask(task);
+        Epic epic = new Epic("Оптимизация рабочего процесса",
+                "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
+        int e1 = tm.addEpic(epic);
+        Subtask subtask = new Subtask("Анализ текущих процессов",
+                "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
+                        + "для оптимизации.", e1);
+        tm.addSubtask(subtask);
+        TaskManager tm2 = FileBackedTaskManager.loadFromFile(tmpSaveFile.toFile());
+        assertEquals(tm.getTask(0).getName(), tm2.getTask(0).getName());
+        assertEquals(tm.getTask(0).getDescription(), tm2.getTask(0).getDescription());
+        assertEquals(tm.getTask(0).getStatus(), tm2.getTask(0).getStatus());
+        assertEquals(tm.getEpic(1).getName(), tm2.getEpic(1).getName());
+        assertEquals(tm.getEpic(1).getDescription(), tm2.getEpic(1).getDescription());
+        assertEquals(tm.getEpic(1).getStatus(), tm2.getEpic(1).getStatus());
+        assertEquals(tm.getSubtask(2).getName(), tm2.getSubtask(2).getName());
+        assertEquals(tm.getSubtask(2).getDescription(), tm2.getSubtask(2).getDescription());
+        assertEquals(tm.getSubtask(2).getStatus(), tm2.getSubtask(2).getStatus());
+        assertEquals(tm.getSubtask(2).getEpicId(), tm2.getSubtask(2).getEpicId());
+    }
+
+    @Test
     void shouldSaveTasksToFile() throws IOException {
         TaskManager tm = new FileBackedTaskManager(tmpSaveFile);
         Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.");
