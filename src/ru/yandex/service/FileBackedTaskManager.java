@@ -84,6 +84,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = tasks.get(curId), epic = epics.get(curId), subtask = subtasks.get(curId);
                 Task curTask = task != null ? task : (epic != null ? epic : subtask);
                 if (curTask == null) {
+                    curId++;
                     continue;
                 }
                 print.println(curTask.getCSV());

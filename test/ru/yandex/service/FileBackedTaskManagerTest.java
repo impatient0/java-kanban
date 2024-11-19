@@ -6,6 +6,7 @@ import ru.yandex.exceptions.ManagerLoadException;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
+import ru.yandex.model.TaskStatus;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,9 +47,16 @@ class FileBackedTaskManagerTest {
     @Test
     void shouldLoadTasksFromFile() {
         TaskManager tm = FileBackedTaskManager.loadFromFile(testSaveFile.toFile());
-        assertEquals(1, tm.getAllTasks().size());
-        assertEquals(1, tm.getAllEpics().size());
-        assertEquals(1, tm.getAllSubtasks().size());
+        Task task = tm.getTask(0);
+        Epic epic = tm.getEpic(1);
+        Subtask subtask = tm.getSubtask(2);
+        assertEquals("Подготовка к экзамену", task.getName());
+        assertEquals(TaskStatus.NEW, epic.getStatus());
+        assertEquals(
+                "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
+                        + "для оптимизации.", subtask.getDescription());
+        assertEquals(1, subtask.getEpicId());
+        assertTrue(epic.getSubtasks().containsKey(2));
     }
 
     @Test
@@ -74,5 +82,23 @@ class FileBackedTaskManagerTest {
     @Test
     void shouldThrowExceptionOnInvalidFile() {
         assertThrows(ManagerLoadException.class, () -> FileBackedTaskManager.loadFromFile(badSaveFile.toFile()));
+    }
+
+    @Test
+    void shouldPreserveIdsUponDeletion() {
+        TaskManager tm = new FileBackedTaskManager(tmpSaveFile);
+        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.");
+        tm.addTask(task);
+        Epic epic = new Epic("Оптимизация рабочего процесса",
+                "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
+        int e1 = tm.addEpic(epic);
+        Subtask subtask = new Subtask("Анализ текущих процессов",
+                "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
+                        + "для оптимизации.", e1);
+        tm.addSubtask(subtask);
+        tm.removeTask(0);
+        TaskManager tm2 = FileBackedTaskManager.loadFromFile(tmpSaveFile.toFile());
+        assertTrue(tm2.getAllTasks().isEmpty());
+        assertTrue(tm2.getEpic(1).getSubtasks().containsKey(2));
     }
 }
