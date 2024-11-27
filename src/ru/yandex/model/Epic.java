@@ -1,5 +1,7 @@
 package ru.yandex.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -7,7 +9,7 @@ public class Epic extends Task {
     private HashMap<Integer, TaskStatus> subtasks = new HashMap<>();
 
     public Epic(String name, String description, int id) {
-        super(name, description, id, TaskStatus.NEW);
+        super(name, description, id, TaskStatus.NEW, Duration.ZERO, LocalDateTime.now());
     }
 
     public Epic(String name, String description) {

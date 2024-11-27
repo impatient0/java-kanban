@@ -1,5 +1,7 @@
 package ru.yandex.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task implements Cloneable {
@@ -7,16 +9,37 @@ public class Task implements Cloneable {
     protected String description;
     protected int id;
     protected TaskStatus status;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
-    public Task(String name, String description, int id, TaskStatus status) {
+    public Task(String name, String description, int id, TaskStatus status, Duration duration,
+                LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public Task(String name, String description, Duration duration, LocalDateTime startTime) {
+        this(name, description, -1, TaskStatus.NEW, duration, startTime);
     }
 
     public Task(String name, String description) {
-        this(name, description, -1, TaskStatus.NEW);
+        this(name, description, Duration.ZERO, LocalDateTime.now());
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
     }
 
     public String getName() {
