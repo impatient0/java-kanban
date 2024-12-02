@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.model.Task;
 import ru.yandex.model.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -19,8 +21,9 @@ class InMemoryHistoryManagerTest {
     @BeforeEach
     void setUp() {
         historyManager = new InMemoryHistoryManager();
-        task1 = new Task("_t1name_", "_t1desc_", 42, TaskStatus.NEW);
-        task2 = new Task("_t2name_", "_t2desc_", 69, TaskStatus.NEW);
+        LocalDateTime nowDateTime = LocalDateTime.now();
+        task1 = new Task("_t1name_", "_t1desc_", 42, TaskStatus.NEW, Duration.ofHours(42), nowDateTime);
+        task2 = new Task("_t2name_", "_t2desc_", 69, TaskStatus.NEW, Duration.ofHours(69), nowDateTime);
     }
 
     @Test

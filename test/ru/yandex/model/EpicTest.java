@@ -3,6 +3,9 @@ package ru.yandex.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
@@ -11,12 +14,14 @@ class EpicTest {
     private static Subtask subtask1;
     private static Subtask subtask2;
     private static Subtask subtask3;
+    private static LocalDateTime nowDateTime;
 
     @BeforeEach
     void setUp() {
-        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.NEW, 42);
-        subtask2 = new Subtask("_s2name_", "_s2desc_", 2, TaskStatus.NEW, 42);
-        subtask3 = new Subtask("_s3name_", "_s3desc_", 3, TaskStatus.IN_PROGRESS, 42);
+        nowDateTime = LocalDateTime.now();
+        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.NEW, 42, Duration.ofHours(42), nowDateTime);
+        subtask2 = new Subtask("_s2name_", "_s2desc_", 2, TaskStatus.NEW, 42, Duration.ofHours(69), nowDateTime.plusHours(100));
+        subtask3 = new Subtask("_s3name_", "_s3desc_", 3, TaskStatus.IN_PROGRESS, 42, Duration.ofHours(14), nowDateTime.plusHours(200));
         epic = new Epic("_ename_", "_edesc_", 42);
         epic.addSubtask(subtask1);
         epic.addSubtask(subtask2);
@@ -59,7 +64,7 @@ class EpicTest {
 
     @Test
     void shouldUpdateSubtask() {
-        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.DONE, 42);
+        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.DONE, 42, Duration.ofHours(42), nowDateTime);
         epic.updateSubtask(subtask1);
         assertEquals(epic.getSubtasks().get(1), TaskStatus.DONE);
     }
@@ -78,7 +83,7 @@ class EpicTest {
         assertTrue(clonedEpic.getSubtasks().containsKey(subtask1.getId()));
         clonedEpic.removeSubtask(subtask3);
         assertTrue(epic.getSubtasks().containsKey(subtask3.getId()));
-        clonedEpic.updateSubtask(new Subtask(subtask2.getName(), subtask2.getDescription(), subtask2.getId(), TaskStatus.DONE, epic.getId()));
+        clonedEpic.updateSubtask(new Subtask(subtask2.getName(), subtask2.getDescription(), subtask2.getId(), TaskStatus.DONE, epic.getId(), subtask2.getDuration(), subtask2.getStartTime()));
         assertEquals(TaskStatus.NEW, epic.getSubtasks().get(subtask2.getId()));
         epic.clearSubtasks();
         assertFalse(clonedEpic.getSubtasks().isEmpty());

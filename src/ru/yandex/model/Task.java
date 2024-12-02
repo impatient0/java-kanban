@@ -26,10 +26,6 @@ public class Task implements Cloneable {
         this(name, description, -1, TaskStatus.NEW, duration, startTime);
     }
 
-    public Task(String name, String description) {
-        this(name, description, Duration.ZERO, LocalDateTime.now());
-    }
-
     public Duration getDuration() {
         return duration;
     }
@@ -70,6 +66,18 @@ public class Task implements Cloneable {
         this.id = id;
     }
 
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -93,7 +101,7 @@ public class Task implements Cloneable {
     }
 
     public String getCSV() {
-        return String.format("%d,%s,%s,%s,%s,", id, TaskType.TASK, name, status, description);
+        return String.format("%d,%s,%s,%s,%s,%s,%s,", id, TaskType.TASK, name, status, description, duration.toString(), startTime.toString());
     }
 
     @Override
@@ -101,6 +109,8 @@ public class Task implements Cloneable {
         Task clone = (Task) super.clone();
         clone.name = name;
         clone.description = description;
+        clone.duration = duration;
+        clone.startTime = startTime;
         return clone;
     }
 }

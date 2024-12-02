@@ -7,6 +7,8 @@ import ru.yandex.model.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -49,9 +51,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 String name = split[2];
                 TaskStatus status = TaskStatus.valueOf(split[3]);
                 String description = split[4];
+                Duration duration = Duration.parse(split[5]);
+                LocalDateTime startTime = LocalDateTime.parse(split[6]);
                 switch (type) {
                     case TaskType.TASK:
-                        Task task = new Task(name, description, id, status);
+                        Task task = new Task(name, description, id, status, duration, startTime);
                         tasks.put(id, task);
                         freeId = Integer.max(id + 1, freeId);
                         break;
@@ -61,8 +65,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         freeId = Integer.max(id + 1, freeId);
                         break;
                     case TaskType.SUBTASK:
-                        int epicId = Integer.parseInt(split[5]);
-                        Subtask subtask = new Subtask(name, description, id, status, epicId);
+                        int epicId = Integer.parseInt(split[7]);
+                        Subtask subtask = new Subtask(name, description, id, status, epicId, duration, startTime);
                         epics.get(epicId).addSubtask(subtask);
                         subtasks.put(id, subtask);
                         freeId = Integer.max(id + 1, freeId);
@@ -176,9 +180,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static void main(String[] args) throws IOException {
         Path saveFile = File.createTempFile("save_file", ".tmp").toPath();
         TaskManager taskManager = new FileBackedTaskManager(saveFile);
-        int t1 = taskManager.addTask(new Task("Подготовка к экзамену", "Составить план подготовки к экзамену."));
+        LocalDateTime nowDateTime = LocalDateTime.now();
+        int t1 = taskManager.addTask(
+                new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(1),
+                        nowDateTime.plusHours(2)));
         int t2 = taskManager.addTask(
-                new Task("Ремонт в детской комнате", "Составить список необходимых материалов и инструментов."));
+                new Task("Ремонт в детской комнате", "Составить список необходимых материалов и инструментов.",
+                        Duration.ofHours(72), nowDateTime.plusHours(4)));
         int e1 = taskManager.addEpic(new Epic("Оптимизация рабочего процесса",
                 "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников."));
         int e2 = taskManager.addEpic(new Epic("Улучшение пользовательского интерфейса",
@@ -186,12 +194,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         + "привлекательности."));
         int s1 = taskManager.addSubtask(new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1));
+                        + "для оптимизации.", e1, Duration.ofHours(2), nowDateTime.plusHours(6)));
         int s2 = taskManager.addSubtask(
-                new Subtask("Разработка рекомендаций", "Подготовка предложений по улучшению рабочих процессов.", e1));
+                new Subtask("Разработка рекомендаций", "Подготовка предложений по улучшению рабочих процессов.", e1,
+                        Duration.ofHours(1), nowDateTime.plusHours(9)));
         int s3 = taskManager.addSubtask(new Subtask("Анализ текущего интерфейса",
                 "Изучение и анализ текущего пользовательского интерфейса приложения для выявления недостатков и "
-                        + "возможностей для улучшения.", e1));
+                        + "возможностей для улучшения.", e1, Duration.ofHours(3), nowDateTime.plusHours(12)));
         TaskManager tm2 = loadFromFile(saveFile.toFile());
         showTasks(tm2);
     }

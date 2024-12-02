@@ -15,18 +15,22 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest {
 
     private Path tmpSaveFile;
+    private LocalDateTime nowDateTime;
     private final Path testSaveFile = Paths.get("test/ru/yandex/service/resource/test_save_file.txt"), badSaveFile
             = Paths.get("test/ru/yandex/service/resource/bad_save_file.txt");
 
     @BeforeEach
     void setUp() throws IOException {
         tmpSaveFile = File.createTempFile("test_save_file", ".tmp").toPath();
+        nowDateTime = LocalDateTime.now();
     }
 
     @Test
@@ -62,14 +66,14 @@ class FileBackedTaskManagerTest {
     @Test
     void shouldSaveToAndLoadTasksFromFile() {
         TaskManager tm = new FileBackedTaskManager(tmpSaveFile);
-        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.");
+        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(42), nowDateTime);
         tm.addTask(task);
         Epic epic = new Epic("Оптимизация рабочего процесса",
                 "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
         int e1 = tm.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1);
+                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(8));
         tm.addSubtask(subtask);
         TaskManager tm2 = FileBackedTaskManager.loadFromFile(tmpSaveFile.toFile());
         assertEquals(tm.getTask(0).getName(), tm2.getTask(0).getName());
@@ -87,14 +91,14 @@ class FileBackedTaskManagerTest {
     @Test
     void shouldSaveTasksToFile() throws IOException {
         TaskManager tm = new FileBackedTaskManager(tmpSaveFile);
-        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.");
+        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(42), nowDateTime);
         tm.addTask(task);
         Epic epic = new Epic("Оптимизация рабочего процесса",
                 "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
         int e1 = tm.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1);
+                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(8));
         tm.addSubtask(subtask);
         try (BufferedReader input = new BufferedReader(new FileReader(tmpSaveFile.toFile()))) {
             input.readLine();
@@ -112,14 +116,14 @@ class FileBackedTaskManagerTest {
     @Test
     void shouldPreserveIdsUponDeletion() {
         TaskManager tm = new FileBackedTaskManager(tmpSaveFile);
-        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.");
+        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(42), nowDateTime);
         tm.addTask(task);
         Epic epic = new Epic("Оптимизация рабочего процесса",
                 "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
         int e1 = tm.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1);
+                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(8));
         tm.addSubtask(subtask);
         tm.removeTask(0);
         TaskManager tm2 = FileBackedTaskManager.loadFromFile(tmpSaveFile.toFile());
