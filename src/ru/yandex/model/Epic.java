@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 public class Epic extends Task {
     private HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private LocalDateTime endTime;
+    private final int classRank = 1;
 
     public Epic(String name, String description, int id) {
         super(name, description, id, TaskStatus.NEW, Duration.ZERO, LocalDateTime.MIN);

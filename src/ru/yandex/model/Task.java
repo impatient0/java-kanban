@@ -2,15 +2,17 @@ package ru.yandex.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Objects;
 
-public class Task implements Cloneable {
+public class Task implements Cloneable, Comparable<Task> {
     protected String name;
     protected String description;
     protected int id;
     protected TaskStatus status;
     protected Duration duration;
     protected LocalDateTime startTime;
+    private final int classRank = 0; // значение для сравнения по типу: Task < Epic < Subtask
 
     public Task(String name, String description, int id, TaskStatus status, Duration duration,
                 LocalDateTime startTime) {
@@ -113,5 +115,14 @@ public class Task implements Cloneable {
         clone.duration = duration;
         clone.startTime = startTime;
         return clone;
+    }
+
+    @Override
+    public int compareTo(Task other) {
+        if (other == null) {
+            throw new IllegalArgumentException();
+        }
+        return Comparator.comparing(Task::getStartTime).thenComparing(t -> t.classRank).thenComparing(Task::getId)
+                .compare(this, other);
     }
 }
