@@ -6,7 +6,6 @@ import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addTask(Task task) {
-        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> TaskManager.checkOverlap(t, task)).findFirst();
+        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> TaskManager.checkOverlap(t, task))
+                .findFirst();
         if (overlappingTask.isPresent()) {
             throw new TaskOverlapException(
                     String.format("Невозможно добавить задачу: пересечение по срокам выполнения с %s #%08d!",
@@ -39,7 +39,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addSubtask(Subtask subtask) {
-        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> TaskManager.checkOverlap(t, subtask)).findFirst();
+        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> TaskManager.checkOverlap(t, subtask))
+                .findFirst();
         if (overlappingTask.isPresent()) {
             throw new TaskOverlapException(
                     String.format("Невозможно добавить подзадачу: пересечение по срокам выполнения с %s #%08d!",
