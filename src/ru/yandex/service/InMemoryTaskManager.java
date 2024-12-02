@@ -1,19 +1,21 @@
 package ru.yandex.service;
 
 import ru.yandex.exceptions.TaskNotFoundException;
+import ru.yandex.exceptions.TaskOverlapException;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
+    protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(
+            Comparator.comparing(Task::getStartTime, LocalDateTime::compareTo));
     protected int freeId = 0;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -21,14 +23,31 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addTask(Task task) {
+        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> checkOverlap(t, task)).findFirst();
+        if (overlappingTask.isPresent()) {
+            throw new TaskOverlapException(
+                    String.format("Невозможно добавить задачу: пересечение по срокам выполнения с %s #%08d!",
+                            overlappingTask.get().getClass() == Task.class ? "задачей" :
+                                    (overlappingTask.get().getClass() == Epic.class ? "эпиком" : "подзадачей"),
+                            overlappingTask.get().getId()));
+        }
         int id = freeId++;
         task.setId(id);
         tasks.put(id, task);
+        prioritizedTasks.add(task);
         return id;
     }
 
     @Override
-    public int addSubtask(Subtask subtask) throws TaskNotFoundException {
+    public int addSubtask(Subtask subtask) {
+        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> checkOverlap(t, subtask)).findFirst();
+        if (overlappingTask.isPresent()) {
+            throw new TaskOverlapException(
+                    String.format("Невозможно добавить подзадачу: пересечение по срокам выполнения с %s #%08d!",
+                            overlappingTask.get().getClass() == Task.class ? "задачей" :
+                                    (overlappingTask.get().getClass() == Epic.class ? "эпиком" : "подзадачей"),
+                            overlappingTask.get().getId()));
+        }
         if (!epics.containsKey(subtask.getEpicId())) {
             throw new TaskNotFoundException(
                     "Невозможно добавить подзадачу к эпику #" + String.format("%08d", subtask.getEpicId())
@@ -37,6 +56,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = freeId++;
         subtask.setId(id);
         subtasks.put(id, subtask);
+        prioritizedTasks.add(subtask);
         epics.get(subtask.getEpicId()).addSubtask(subtask);
         return id;
     }
@@ -50,26 +70,32 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) throws TaskNotFoundException {
+    public void updateTask(Task task) {
         if (!tasks.containsKey(task.getId())) {
             throw new TaskNotFoundException("Невозможно обновить задачу #" + String.format("%08d", task.getId())
                     + ": такой задачи не существует!");
         }
+        prioritizedTasks.remove(tasks.get(task.getId()));
         tasks.put(task.getId(), task);
+        prioritizedTasks.add(task);
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) throws TaskNotFoundException {
+    public void updateSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
             throw new TaskNotFoundException("Невозможно обновить подзадачу #" + String.format("%08d", subtask.getId())
                     + ": такой подзадачи не существует!");
         }
+        prioritizedTasks.remove(epics.get(subtask.getEpicId()));
         epics.get(subtask.getEpicId()).updateSubtask(subtask);
+        prioritizedTasks.add(epics.get(subtask.getEpicId()));
+        prioritizedTasks.remove(subtasks.get(subtask.getId()));
         subtasks.put(subtask.getId(), subtask);
+        prioritizedTasks.add(subtask);
     }
 
     @Override
-    public void updateEpic(Epic epic) throws TaskNotFoundException {
+    public void updateEpic(Epic epic) {
         if (!epics.containsKey(epic.getId())) {
             throw new TaskNotFoundException("Невозможно обновить эпик #" + String.format("%08d", epic.getId())
                     + ": такого эпика не существует!");
@@ -77,7 +103,9 @@ public class InMemoryTaskManager implements TaskManager {
         Epic oldEpic = epics.get(epic.getId());
         oldEpic.setName(epic.getName());
         oldEpic.setDescription(epic.getDescription());
+        prioritizedTasks.remove(epics.get(epic.getId()));
         epics.put(epic.getId(), oldEpic);
+        prioritizedTasks.add(epic);
     }
 
     @Override
@@ -100,6 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (int id : tasks.keySet()) {
             historyManager.remove(id);
         }
+        prioritizedTasks.removeAll(tasks.values());
         tasks.clear();
     }
 
@@ -111,6 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (int id : subtasks.keySet()) {
             historyManager.remove(id);
         }
+        prioritizedTasks.removeAll(subtasks.values());
         subtasks.clear();
     }
 
@@ -123,7 +153,9 @@ public class InMemoryTaskManager implements TaskManager {
         for (int id : epics.keySet()) {
             historyManager.remove(id);
         }
+        prioritizedTasks.removeAll(subtasks.values());
         subtasks.clear();
+        prioritizedTasks.removeAll(epics.values());
         epics.clear();
     }
 
@@ -155,6 +187,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean removeTask(int id) {
         historyManager.remove(id);
+        prioritizedTasks.remove(tasks.get(id));
         return tasks.remove(id) != null;
     }
 
@@ -168,6 +201,7 @@ public class InMemoryTaskManager implements TaskManager {
             subtasks.remove(s);
         }
         historyManager.remove(id);
+        prioritizedTasks.remove(epics.get(id));
         epics.remove(id);
         return true;
     }
@@ -180,6 +214,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         epics.get(subtask.getEpicId()).removeSubtask(subtask);
         historyManager.remove(id);
+        prioritizedTasks.remove(subtasks.get(id));
         subtasks.remove(id);
         return true;
     }
@@ -192,7 +227,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public ArrayList<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
+    }
+
+    @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    protected boolean checkOverlap(Task task1, Task task2) {
+        return (task1.getEndTime().isBefore(task2.getStartTime()) || task1.getStartTime().isAfter(task2.getEndTime()));
     }
 }
