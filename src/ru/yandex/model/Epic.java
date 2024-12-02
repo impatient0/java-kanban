@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class Epic extends Task {
-    private HashMap<Integer, TaskStatus> subtasks = new HashMap<>();
-    private HashMap<Integer, Duration> subtaskDurations = new HashMap<>();
+    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private LocalDateTime endTime;
 
     public Epic(String name, String description, int id) {
@@ -31,27 +30,26 @@ public class Epic extends Task {
             this.status = TaskStatus.NEW;
             return;
         }
-        if (subtasks.values().stream().allMatch(TaskStatus.NEW::equals)) {
+        if (subtasks.values().stream().allMatch(s -> s.getStatus().equals(TaskStatus.NEW))) {
             this.status = TaskStatus.NEW;
             return;
         }
-        if (subtasks.values().stream().allMatch(TaskStatus.DONE::equals)) {
+        if (subtasks.values().stream().allMatch(s -> s.getStatus().equals(TaskStatus.DONE))) {
             this.status = TaskStatus.DONE;
             return;
         }
         this.status = TaskStatus.IN_PROGRESS;
     }
 
-    public HashMap<Integer, TaskStatus> getSubtasks() {
+    public HashMap<Integer, Subtask> getSubtasks() {
         return subtasks;
     }
 
     public boolean addSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
-            subtasks.put(subtask.getId(), subtask.getStatus());
-            subtaskDurations.put(subtask.getId(), subtask.getDuration());
+            subtasks.put(subtask.getId(), subtask);
             updateStatus();
-            updateTimeAndDuration(subtask);
+            updateTimeAndDuration();
             return true;
         }
         return false;
@@ -61,19 +59,17 @@ public class Epic extends Task {
         if (!subtasks.containsKey(subtask.getId())) {
             return false;
         }
-        subtasks.put(subtask.getId(), subtask.getStatus());
-        subtaskDurations.put(subtask.getId(), subtask.getDuration());
+        subtasks.put(subtask.getId(), subtask);
         updateStatus();
-        updateTimeAndDuration(subtask);
+        updateTimeAndDuration();
         return true;
     }
 
     public boolean removeSubtask(Subtask subtask) {
         boolean result = subtasks.remove(subtask.getId()) != null;
         if (result) {
-            subtaskDurations.remove(subtask.getId());
             updateStatus();
-            updateTimeAndDuration(subtask);
+            updateTimeAndDuration();
         }
         return result;
     }
@@ -81,7 +77,6 @@ public class Epic extends Task {
     public void clearSubtasks() {
         this.status = TaskStatus.NEW;
         subtasks.clear();
-        subtaskDurations.clear();
     }
 
     @Override
@@ -89,18 +84,12 @@ public class Epic extends Task {
         return endTime;
     }
 
-    @Override
-    public Duration getDuration() {
-        return subtaskDurations.values().stream().reduce(Duration.ZERO, Duration::plus);
-    }
-
-    private void updateTimeAndDuration(Subtask subtask) {
-        if (this.startTime.isEqual(LocalDateTime.MIN) || subtask.getStartTime().isBefore(this.startTime)) {
-            this.startTime = subtask.getStartTime();
-        }
-        if (this.endTime.isBefore(subtask.getEndTime())) {
-            this.endTime = subtask.getEndTime();
-        }
+    private void updateTimeAndDuration() {
+        duration = subtasks.values().stream().map(Task::getDuration).reduce(Duration.ZERO, Duration::plus);
+        startTime = subtasks.values().stream().map(Task::getStartTime).min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MIN);
+        endTime = subtasks.values().stream().map(Task::getEndTime).max(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MAX);
     }
 
     @Override
@@ -111,14 +100,11 @@ public class Epic extends Task {
     @Override
     public Epic clone() throws CloneNotSupportedException {
         Epic clone = (Epic) super.clone();
-        HashMap<Integer, TaskStatus> clonedSubtasks = new HashMap<>();
-        HashMap<Integer, Duration> clonedSubtaskDurations = new HashMap<>();
+        HashMap<Integer, Subtask> clonedSubtasks = new HashMap<>();
         for (Integer id : this.subtasks.keySet()) {
             clonedSubtasks.put(id, this.subtasks.get(id));
-            clonedSubtaskDurations.put(id, this.subtaskDurations.get(id));
         }
         clone.subtasks = clonedSubtasks;
-        clone.subtaskDurations = clonedSubtaskDurations;
         return clone;
     }
 }
