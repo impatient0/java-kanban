@@ -194,13 +194,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         + "привлекательности."));
         int s1 = taskManager.addSubtask(new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1, Duration.ofHours(2), nowDateTime.plusHours(6)));
+                        + "для оптимизации.", e1, Duration.ofHours(2), nowDateTime.plusHours(128)));
         int s2 = taskManager.addSubtask(
                 new Subtask("Разработка рекомендаций", "Подготовка предложений по улучшению рабочих процессов.", e1,
-                        Duration.ofHours(1), nowDateTime.plusHours(9)));
+                        Duration.ofHours(1), nowDateTime.plusHours(130)));
         int s3 = taskManager.addSubtask(new Subtask("Анализ текущего интерфейса",
                 "Изучение и анализ текущего пользовательского интерфейса приложения для выявления недостатков и "
-                        + "возможностей для улучшения.", e1, Duration.ofHours(3), nowDateTime.plusHours(12)));
+                        + "возможностей для улучшения.", e1, Duration.ofHours(3), nowDateTime.plusHours(144)));
         TaskManager tm2 = loadFromFile(saveFile.toFile());
         showTasks(tm2);
     }

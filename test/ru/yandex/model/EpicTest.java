@@ -25,47 +25,59 @@ class EpicTest {
         subtask3 = new Subtask("_s3name_", "_s3desc_", 3, TaskStatus.IN_PROGRESS, 42, Duration.ofHours(14),
                 nowDateTime.plusHours(200));
         epic = new Epic("_ename_", "_edesc_", 42);
-        epic.addSubtask(subtask1);
-        epic.addSubtask(subtask2);
     }
 
     @Test
     void shouldConvertEpicToString() {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         String s = "Эпик #00000042 \"_ename_\": _edesc_ Статус: NEW; Подзадачи: #00000001, #00000002";
         assertEquals(s, epic.toString());
     }
 
     @Test
     void shouldBeIN_PROGRESSWhenSubtasksUpdate() {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         epic.addSubtask(subtask3);
         assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
     }
 
     @Test
     void shouldAddSubtask() {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         epic.addSubtask(subtask3);
         assertTrue(epic.getSubtasks().containsKey(3) && epic.getSubtasks().get(3).getStatus() == TaskStatus.IN_PROGRESS);
     }
 
     @Test
     void shouldReturnFalseIfAddingAlreadyPresentSubtask() {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         assertFalse(epic.addSubtask(subtask2));
     }
 
     @Test
     void shouldRemoveSubtask() {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         epic.removeSubtask(subtask2);
         assertFalse(epic.getSubtasks().containsKey(2));
     }
 
     @Test
     void shouldClearSubtasks() {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         epic.clearSubtasks();
         assertTrue(epic.getSubtasks().isEmpty());
     }
 
     @Test
     void shouldUpdateSubtask() {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.DONE, 42, Duration.ofHours(42), nowDateTime);
         epic.updateSubtask(subtask1);
         assertEquals(TaskStatus.DONE, epic.getSubtasks().get(1).getStatus());
@@ -73,12 +85,16 @@ class EpicTest {
 
     @Test
     void shouldTreatEpicsWithSameIdAsEqual() {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         Epic anotherEpic = new Epic("_anotherename_", "_anotheredesc_", 42);
         assertEquals(epic, anotherEpic);
     }
 
     @Test
     void shouldNotCreateSharedReferencesWhenCloning() throws CloneNotSupportedException {
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
         epic.addSubtask(subtask3);
         Epic clonedEpic = epic.clone();
         epic.removeSubtask(subtask1);
@@ -114,5 +130,41 @@ class EpicTest {
         assertEquals(subtask2.getStartTime(), epic.getStartTime());
         assertEquals(subtask2.getDuration().plus(anotherSubtask.getDuration()), epic.getDuration());
         assertEquals(anotherSubtask.getEndTime(), epic.getEndTime());
+    }
+
+    @Test
+    void shouldDeriveStatusFromAllNewSubtasks() {
+        subtask1.setStatus(TaskStatus.NEW);
+        subtask2.setStatus(TaskStatus.NEW);
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
+        assertEquals(TaskStatus.NEW, epic.getStatus());
+    }
+
+    @Test
+    void shouldDeriveStatusFromAllDoneSubtasks() {
+        subtask1.setStatus(TaskStatus.DONE);
+        subtask2.setStatus(TaskStatus.DONE);
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
+        assertEquals(TaskStatus.DONE, epic.getStatus());
+    }
+
+    @Test
+    void shouldDeriveStatusFromNewAndDoneSubtasks() {
+        subtask1.setStatus(TaskStatus.NEW);
+        subtask2.setStatus(TaskStatus.DONE);
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+    }
+
+    @Test
+    void shouldDeriveStatusFromAllInProgressSubtasks() {
+        subtask1.setStatus(TaskStatus.IN_PROGRESS);
+        subtask2.setStatus(TaskStatus.IN_PROGRESS);
+        epic.addSubtask(subtask1);
+        epic.addSubtask(subtask2);
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
     }
 }
