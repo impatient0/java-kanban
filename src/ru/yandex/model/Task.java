@@ -101,7 +101,8 @@ public class Task implements Cloneable {
     }
 
     public String getCSV() {
-        return String.format("%d,%s,%s,%s,%s,%s,%s,", id, TaskType.TASK, name, status, description, duration.toString(), startTime.toString());
+        return String.format("%d,%s,%s,%s,%s,%s,%s,", id, TaskType.TASK, name, status, description, duration.toString(),
+                startTime.toString());
     }
 
     @Override

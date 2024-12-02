@@ -18,7 +18,8 @@ class ManagersTest {
         int taskId = taskManager.addTask(task);
         assertEquals(task, taskManager.getTask(taskId));
         assertTrue(taskManager.getAllTasks().contains(task));
-        taskManager.updateTask(new Task("_tname_", "_anothertdesc_", taskId, TaskStatus.IN_PROGRESS, Duration.ZERO, LocalDateTime.MIN));
+        taskManager.updateTask(new Task("_tname_", "_anothertdesc_", taskId, TaskStatus.IN_PROGRESS, Duration.ZERO,
+                LocalDateTime.MIN));
         assertEquals(TaskStatus.IN_PROGRESS, taskManager.getTask(taskId).getStatus());
         taskManager.removeTask(taskId);
         assertNull(taskManager.getTask(taskId));
