@@ -12,7 +12,11 @@ public class Task implements Cloneable, Comparable<Task> {
     protected TaskStatus status;
     protected Duration duration;
     protected LocalDateTime startTime;
-    private final int classRank = 0; // значение для сравнения по типу: Task < Epic < Subtask
+
+    public int getClassRank() {
+        // значение для сравнения по типу: Task < Epic < Subtask
+        return 0;
+    }
 
     public Task(String name, String description, int id, TaskStatus status, Duration duration,
                 LocalDateTime startTime) {
@@ -122,7 +126,7 @@ public class Task implements Cloneable, Comparable<Task> {
         if (other == null) {
             throw new IllegalArgumentException();
         }
-        return Comparator.comparing(Task::getStartTime).thenComparing(t -> t.classRank).thenComparing(Task::getId)
+        return Comparator.comparing(Task::getStartTime).thenComparing(Task::getClassRank).thenComparing(Task::getId)
                 .compare(this, other);
     }
 }

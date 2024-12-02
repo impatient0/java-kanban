@@ -5,7 +5,11 @@ import java.time.LocalDateTime;
 
 public class Subtask extends Task {
     private final int epicId;
-    private final int classRank = 2;
+
+    @Override
+    public int getClassRank() {
+        return 2;
+    }
 
     public Subtask(String name, String description, int id, TaskStatus status, int epicId, Duration duration,
                    LocalDateTime startTime) {
