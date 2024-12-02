@@ -6,6 +6,7 @@ import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -237,6 +238,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     protected boolean checkOverlap(Task task1, Task task2) {
-        return (task1.getEndTime().isBefore(task2.getStartTime()) || task1.getStartTime().isAfter(task2.getEndTime()));
+        LocalDateTime start1 = task1.getStartTime(), start2 = task2.getStartTime(), end1 = task1.getEndTime(), end2
+                = task2.getEndTime();
+        return ((!start1.isBefore(start2) && !end1.isAfter(end2)) || (!start2.isBefore(start1) && !start2.isAfter(end1)));
     }
 }

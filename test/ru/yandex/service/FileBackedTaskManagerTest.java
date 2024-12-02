@@ -74,18 +74,24 @@ class FileBackedTaskManagerTest {
         int e1 = tm.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(8));
+                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
         tm.addSubtask(subtask);
         TaskManager tm2 = FileBackedTaskManager.loadFromFile(tmpSaveFile.toFile());
         assertEquals(tm.getTask(0).getName(), tm2.getTask(0).getName());
         assertEquals(tm.getTask(0).getDescription(), tm2.getTask(0).getDescription());
         assertEquals(tm.getTask(0).getStatus(), tm2.getTask(0).getStatus());
+        assertEquals(tm.getTask(0).getStartTime(), tm2.getTask(0).getStartTime());
+        assertEquals(tm.getTask(0).getDuration(), tm2.getTask(0).getDuration());
         assertEquals(tm.getEpic(1).getName(), tm2.getEpic(1).getName());
         assertEquals(tm.getEpic(1).getDescription(), tm2.getEpic(1).getDescription());
         assertEquals(tm.getEpic(1).getStatus(), tm2.getEpic(1).getStatus());
+        assertEquals(tm.getEpic(1).getStartTime(), tm2.getEpic(1).getStartTime());
+        assertEquals(tm.getEpic(1).getDuration(), tm2.getEpic(1).getDuration());
         assertEquals(tm.getSubtask(2).getName(), tm2.getSubtask(2).getName());
         assertEquals(tm.getSubtask(2).getDescription(), tm2.getSubtask(2).getDescription());
         assertEquals(tm.getSubtask(2).getStatus(), tm2.getSubtask(2).getStatus());
+        assertEquals(tm.getSubtask(2).getStartTime(), tm2.getSubtask(2).getStartTime());
+        assertEquals(tm.getSubtask(2).getDuration(), tm2.getSubtask(2).getDuration());
         assertEquals(tm.getSubtask(2).getEpicId(), tm2.getSubtask(2).getEpicId());
     }
 
@@ -100,7 +106,7 @@ class FileBackedTaskManagerTest {
         int e1 = tm.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(8));
+                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
         tm.addSubtask(subtask);
         try (BufferedReader input = new BufferedReader(new FileReader(tmpSaveFile.toFile()))) {
             input.readLine();
@@ -126,7 +132,7 @@ class FileBackedTaskManagerTest {
         int e1 = tm.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(8));
+                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
         tm.addSubtask(subtask);
         tm.removeTask(0);
         TaskManager tm2 = FileBackedTaskManager.loadFromFile(tmpSaveFile.toFile());
