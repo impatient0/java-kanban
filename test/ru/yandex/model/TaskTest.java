@@ -47,4 +47,9 @@ class TaskTest {
         assertEquals(Duration.ofHours(69), task.getDuration());
         assertEquals(Duration.ofHours(42), clonedTask.getDuration());
     }
+
+    @Test
+    void shouldReturnCorrectEndTime() {
+        assertEquals(nowDateTime.plus(task.getDuration()), task.getEndTime());
+    }
 }
