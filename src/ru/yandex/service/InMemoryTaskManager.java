@@ -6,7 +6,6 @@ import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -126,21 +125,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTasks() {
-        for (int id : tasks.keySet()) {
-            historyManager.remove(id);
-        }
+        tasks.keySet().forEach(historyManager::remove);
         prioritizedTasks.removeAll(tasks.values());
         tasks.clear();
     }
 
     @Override
     public void clearSubtasks() {
-        for (Epic epic : epics.values()) {
-            epic.clearSubtasks();
-        }
-        for (int id : subtasks.keySet()) {
-            historyManager.remove(id);
-        }
+        epics.values().forEach(Epic::clearSubtasks);
+        subtasks.keySet().forEach(historyManager::remove);
         prioritizedTasks.removeAll(subtasks.values());
         subtasks.clear();
     }
@@ -148,12 +141,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearEpics() {
         // подзадачи не могут существовать без эпиков, поэтому также удаляются
-        for (int id : subtasks.keySet()) {
-            historyManager.remove(id);
-        }
-        for (int id : epics.keySet()) {
-            historyManager.remove(id);
-        }
+        subtasks.keySet().forEach(historyManager::remove);
+        epics.keySet().forEach(historyManager::remove);
         prioritizedTasks.removeAll(subtasks.values());
         subtasks.clear();
         prioritizedTasks.removeAll(epics.values());
@@ -197,10 +186,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (!epics.containsKey(id)) {
             return false;
         }
-        for (int s : epics.get(id).getSubtasks().keySet()) {
+        epics.get(id).getSubtasks().keySet().forEach(s -> {
             historyManager.remove(s);
             subtasks.remove(s);
-        }
+        });
         historyManager.remove(id);
         prioritizedTasks.remove(epics.get(id));
         epics.remove(id);
@@ -240,6 +229,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected boolean checkOverlap(Task task1, Task task2) {
         LocalDateTime start1 = task1.getStartTime(), start2 = task2.getStartTime(), end1 = task1.getEndTime(), end2
                 = task2.getEndTime();
-        return ((!start1.isBefore(start2) && start1.isBefore(end2)) || (!start2.isBefore(start1) && start2.isBefore(end1)));
+        return ((!start1.isBefore(start2) && start1.isBefore(end2)) || (!start2.isBefore(start1) && start2.isBefore(
+                end1)));
     }
 }

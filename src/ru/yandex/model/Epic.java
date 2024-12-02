@@ -100,11 +100,7 @@ public class Epic extends Task {
     @Override
     public Epic clone() throws CloneNotSupportedException {
         Epic clone = (Epic) super.clone();
-        HashMap<Integer, Subtask> clonedSubtasks = new HashMap<>();
-        for (Integer id : this.subtasks.keySet()) {
-            clonedSubtasks.put(id, this.subtasks.get(id));
-        }
-        clone.subtasks = clonedSubtasks;
+        clone.subtasks = new HashMap<>(this.subtasks);
         return clone;
     }
 }
