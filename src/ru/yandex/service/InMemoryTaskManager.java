@@ -14,8 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
-    protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(
-            Comparator.comparing(Task::getStartTime, LocalDateTime::compareTo));
+    protected final TreeSet<Task> prioritizedTasks = new TreeSet<>();
     protected int freeId = 0;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -23,7 +22,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addTask(Task task) {
-        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> checkOverlap(t, task)).findFirst();
+        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> TaskManager.checkOverlap(t, task)).findFirst();
         if (overlappingTask.isPresent()) {
             throw new TaskOverlapException(
                     String.format("Невозможно добавить задачу: пересечение по срокам выполнения с %s #%08d!",
@@ -40,7 +39,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addSubtask(Subtask subtask) {
-        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> checkOverlap(t, subtask)).findFirst();
+        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(t -> TaskManager.checkOverlap(t, subtask)).findFirst();
         if (overlappingTask.isPresent()) {
             throw new TaskOverlapException(
                     String.format("Невозможно добавить подзадачу: пересечение по срокам выполнения с %s #%08d!",
@@ -57,7 +56,9 @@ public class InMemoryTaskManager implements TaskManager {
         subtask.setId(id);
         subtasks.put(id, subtask);
         prioritizedTasks.add(subtask);
+        prioritizedTasks.remove(epics.get(subtask.getEpicId()));
         epics.get(subtask.getEpicId()).addSubtask(subtask);
+        prioritizedTasks.add(epics.get(subtask.getEpicId()));
         return id;
     }
 
@@ -66,6 +67,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = freeId++;
         epic.setId(id);
         epics.put(id, epic);
+        prioritizedTasks.add(epic);
         return id;
     }
 
@@ -224,12 +226,5 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
-    }
-
-    protected boolean checkOverlap(Task task1, Task task2) {
-        LocalDateTime start1 = task1.getStartTime(), start2 = task2.getStartTime(), end1 = task1.getEndTime(), end2
-                = task2.getEndTime();
-        return ((!start1.isBefore(start2) && start1.isBefore(end2)) || (!start2.isBefore(start1) && start2.isBefore(
-                end1)));
     }
 }

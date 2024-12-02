@@ -17,18 +17,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     private Path tmpSaveFile;
     private LocalDateTime nowDateTime;
     private final Path testSaveFile = Paths.get("test/ru/yandex/service/resource/test_save_file.txt"), badSaveFile
             = Paths.get("test/ru/yandex/service/resource/bad_save_file.txt");
 
+    FileBackedTaskManagerTest() {
+        super(() -> {
+            try {
+                return new FileBackedTaskManager(File.createTempFile("test_save_file", ".tmp").toPath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     @BeforeEach
-    void setUp() throws IOException {
+    void setUpForFileBackedTaskManager() throws IOException {
         tmpSaveFile = File.createTempFile("test_save_file", ".tmp").toPath();
         nowDateTime = LocalDateTime.now();
     }
@@ -50,10 +61,10 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldLoadTasksFromFile() {
-        TaskManager tm = FileBackedTaskManager.loadFromFile(testSaveFile.toFile());
-        Task task = tm.getTask(0);
-        Epic epic = tm.getEpic(1);
-        Subtask subtask = tm.getSubtask(2);
+        TaskManager tm_test = FileBackedTaskManager.loadFromFile(testSaveFile.toFile());
+        Task task = tm_test.getTask(0);
+        Epic epic = tm_test.getEpic(1);
+        Subtask subtask = tm_test.getSubtask(2);
         assertEquals("Подготовка к экзамену", task.getName());
         assertEquals(TaskStatus.NEW, epic.getStatus());
         assertEquals(
