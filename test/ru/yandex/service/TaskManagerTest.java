@@ -20,7 +20,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     private static TaskManager taskManager;
     private static LocalDateTime nowDateTime;
-    private final Supplier<? extends T> factory;
+    protected final Supplier<? extends T> factory;
 
     TaskManagerTest(Supplier<? extends T> factory) {
         this.factory = factory;
