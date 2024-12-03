@@ -2,7 +2,6 @@ import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
 import ru.yandex.service.FileBackedTaskManager;
-import ru.yandex.service.InMemoryTaskManager;
 import ru.yandex.service.TaskManager;
 
 import java.io.File;
