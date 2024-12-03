@@ -11,7 +11,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private static final String HEADER = "id,type,name,status,description,epic";
+    private static final String HEADER = "id,type,name,status,description,duration,start_time,epic";
     private final Path saveFile;
 
     public FileBackedTaskManager(Path saveFile) {
@@ -60,6 +60,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     case TaskType.TASK:
                         Task task = new Task(name, description, id, status, duration, startTime);
                         tasks.put(id, task);
+                        prioritizedTasks.add(task);
                         freeId = Integer.max(id + 1, freeId);
                         break;
                     case TaskType.EPIC:
@@ -72,6 +73,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         Subtask subtask = new Subtask(name, description, id, status, epicId, duration, startTime);
                         epics.get(epicId).addSubtask(subtask);
                         subtasks.put(id, subtask);
+                        prioritizedTasks.add(subtask);
                         freeId = Integer.max(id + 1, freeId);
                         break;
                     default:
