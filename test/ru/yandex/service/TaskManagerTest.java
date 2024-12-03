@@ -271,7 +271,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Subtask subtask = new Subtask("_s2name_", "_s2desc_", firstEpicId, Duration.ZERO,
                 LocalDateTime.MIN.plusHours(2));
         taskManager.addSubtask(subtask);
-        assertArrayEquals(new Task[]{epic2, task, epic1, subtask}, taskManager.getPrioritizedTasks().toArray());
+        assertArrayEquals(new Task[]{task, subtask}, taskManager.getPrioritizedTasks().toArray());
     }
 
     @Test
@@ -339,19 +339,17 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void shouldNowAllowOverlappingTasks() {
         Task task1 = new Task("_t1name_", "_t1desc_", -1, TaskStatus.IN_PROGRESS, Duration.ofHours(42), nowDateTime);
         Task task2 = new Task("_t2name_", "_t2desc_", -1, TaskStatus.IN_PROGRESS, Duration.ofHours(69),
+                nowDateTime.plusHours(69));
+        Task task3 = new Task("_t3name_", "_t3desc_", -1, TaskStatus.IN_PROGRESS, Duration.ofHours(69),
                 nowDateTime.plusHours(14));
         taskManager.addTask(task1);
-        assertThrows(TaskOverlapException.class, () -> taskManager.addTask(task2));
-    }
-
-    @Test
-    void shouldCheckOverlap() {
-        Task task1 = new Task("_t1name_", "_t1desc_", -1, TaskStatus.IN_PROGRESS, Duration.ofHours(42), nowDateTime);
-        Task task2 = new Task("_t2name_", "_t2desc_", -1, TaskStatus.IN_PROGRESS, Duration.ofHours(69),
+        int task2id = taskManager.addTask(task2);
+        assertThrows(TaskOverlapException.class, () -> taskManager.addTask(task3));
+        Task goodUpdate = new Task("_t2name_", "_t2desc_", task2id, TaskStatus.IN_PROGRESS, Duration.ofHours(69),
+                nowDateTime.plusHours(42));
+        Task badUpdate = new Task("_t2name_", "_t2desc_", task2id, TaskStatus.IN_PROGRESS, Duration.ofHours(69),
                 nowDateTime.plusHours(14));
-        Task task3 = new Task("_t3name_", "_t3desc_", -1, TaskStatus.IN_PROGRESS, Duration.ofHours(1337),
-                nowDateTime.plusHours(1337));
-        assertTrue(TaskManager.checkOverlap(task1, task2));
-        assertFalse(TaskManager.checkOverlap(task2, task3));
+        assertDoesNotThrow(() -> taskManager.updateTask(goodUpdate));
+        assertThrows(TaskOverlapException.class, () -> taskManager.updateTask(badUpdate));
     }
 }

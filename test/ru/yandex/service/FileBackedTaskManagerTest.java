@@ -99,6 +99,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals(taskManager.getEpic(1).getStatus(), tm2.getEpic(1).getStatus());
         assertEquals(taskManager.getEpic(1).getStartTime(), tm2.getEpic(1).getStartTime());
         assertEquals(taskManager.getEpic(1).getDuration(), tm2.getEpic(1).getDuration());
+        assertEquals(taskManager.getEpic(1).getEndTime(), tm2.getEpic(1).getEndTime());
         assertEquals(taskManager.getSubtask(2).getName(), tm2.getSubtask(2).getName());
         assertEquals(taskManager.getSubtask(2).getDescription(), tm2.getSubtask(2).getDescription());
         assertEquals(taskManager.getSubtask(2).getStatus(), tm2.getSubtask(2).getStatus());
