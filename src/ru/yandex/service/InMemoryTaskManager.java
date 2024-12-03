@@ -14,8 +14,8 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
     protected final TreeSet<Task> prioritizedTasks = new TreeSet<>();
-    protected int freeId = 0;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected int freeId = 0;
 
     // методы добавления возвращают id добавленного элемента
 

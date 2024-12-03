@@ -5,5 +5,4 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         super(InMemoryTaskManager::new);
     }
 
-
 }

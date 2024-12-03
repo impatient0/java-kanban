@@ -8,7 +8,7 @@ import ru.yandex.model.TaskStatus;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class TaskListTest {
 

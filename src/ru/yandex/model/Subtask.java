@@ -6,11 +6,6 @@ import java.time.LocalDateTime;
 public class Subtask extends Task {
     private final int epicId;
 
-    @Override
-    public int getClassRank() {
-        return 2;
-    }
-
     public Subtask(String name, String description, int id, TaskStatus status, int epicId, Duration duration,
                    LocalDateTime startTime) {
         super(name, description, id, status, duration, startTime);
@@ -19,6 +14,11 @@ public class Subtask extends Task {
 
     public Subtask(String name, String description, int epicId, Duration duration, LocalDateTime startTime) {
         this(name, description, -1, TaskStatus.NEW, epicId, duration, startTime);
+    }
+
+    @Override
+    public int getClassRank() {
+        return 2;
     }
 
     @Override

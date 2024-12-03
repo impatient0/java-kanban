@@ -23,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-    private FileBackedTaskManager taskManager;
-    private LocalDateTime nowDateTime;
     private final Path testSaveFile = Paths.get("test/ru/yandex/service/resource/test_save_file.txt"), badSaveFile
             = Paths.get("test/ru/yandex/service/resource/bad_save_file.txt");
+    private FileBackedTaskManager taskManager;
+    private LocalDateTime nowDateTime;
 
     FileBackedTaskManagerTest() {
         super(() -> {

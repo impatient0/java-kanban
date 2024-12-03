@@ -20,7 +20,8 @@ class SubtaskTest {
 
     @Test
     void shouldTreatSubtasksWithSameIdAsEqual() {
-        Subtask anotherSubtask = new Subtask("_anothersname_", "_anothersdesc_", 1, TaskStatus.DONE, 69, Duration.ofHours(42), LocalDateTime.now());
+        Subtask anotherSubtask = new Subtask("_anothersname_", "_anothersdesc_", 1, TaskStatus.DONE, 69,
+                Duration.ofHours(42), LocalDateTime.now());
         assertEquals(subtask, anotherSubtask);
     }
 

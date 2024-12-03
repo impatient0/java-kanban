@@ -9,11 +9,6 @@ public class Epic extends Task {
     private HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private LocalDateTime endTime;
 
-    @Override
-    public int getClassRank() {
-        return 1;
-    }
-
     public Epic(String name, String description, int id) {
         super(name, description, id, TaskStatus.NEW, Duration.ZERO, LocalDateTime.MIN);
         this.endTime = LocalDateTime.MIN;
@@ -21,6 +16,11 @@ public class Epic extends Task {
 
     public Epic(String name, String description) {
         this(name, description, -1);
+    }
+
+    @Override
+    public int getClassRank() {
+        return 1;
     }
 
     @Override

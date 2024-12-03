@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskTest {
 
@@ -27,7 +27,8 @@ class TaskTest {
 
     @Test
     void shouldTreatTasksWithSameIdAsEqual() {
-        Task anotherTask = new Task("_anothertname_", "_anothertdesc_", 42, TaskStatus.IN_PROGRESS, Duration.ofHours(69), nowDateTime);
+        Task anotherTask = new Task("_anothertname_", "_anothertdesc_", 42, TaskStatus.IN_PROGRESS,
+                Duration.ofHours(69), nowDateTime);
         assertEquals(task, anotherTask);
     }
 

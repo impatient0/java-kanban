@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 abstract class HistoryManagerTest<T extends HistoryManager> {
 
-    private HistoryManager historyManager;
     protected final Supplier<? extends T> factory;
+    private HistoryManager historyManager;
     private Task task1;
     private Task task2;
     private Task task3;

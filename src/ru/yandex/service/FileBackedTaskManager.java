@@ -11,12 +11,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private final Path saveFile;
     private static final String HEADER = "id,type,name,status,description,epic";
-
-    public Path getSaveFile() {
-        return saveFile;
-    }
+    private final Path saveFile;
 
     public FileBackedTaskManager(Path saveFile) {
         this.saveFile = saveFile;
@@ -33,6 +29,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager manager = new FileBackedTaskManager(file.toPath());
         manager.load();
         return manager;
+    }
+
+    public Path getSaveFile() {
+        return saveFile;
     }
 
     private void load() {
