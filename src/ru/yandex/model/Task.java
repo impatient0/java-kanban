@@ -128,6 +128,6 @@ public class Task implements Cloneable, Comparable<Task> {
         if (other == null) {
             throw new IllegalArgumentException();
         }
-        return Comparator.comparing(Task::getStartTime).thenComparing(Task::getId).compare(this, other);
+        return Comparator.comparing(Task::getStartTime).compare(this, other);
     }
 }
