@@ -19,11 +19,6 @@ public class Epic extends Task {
     }
 
     @Override
-    public int getClassRank() {
-        return 1;
-    }
-
-    @Override
     public String toString() {
         return super.toString().replace("Задача", "Эпик") + "; Подзадачи: " + (subtasks.isEmpty() ? "нет" :
                 subtasks.keySet().stream().map(st -> "#" + String.format("%08d", st))

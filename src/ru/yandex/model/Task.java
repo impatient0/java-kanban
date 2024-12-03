@@ -27,11 +27,6 @@ public class Task implements Cloneable, Comparable<Task> {
         this(name, description, -1, TaskStatus.NEW, duration, startTime);
     }
 
-    public int getClassRank() {
-        // значение для сравнения по типу: Task < Epic < Subtask
-        return 0;
-    }
-
     public Duration getDuration() {
         return duration;
     }
@@ -121,12 +116,18 @@ public class Task implements Cloneable, Comparable<Task> {
         return clone;
     }
 
+    public boolean overlaps(Task other) {
+        LocalDateTime start1 = this.getStartTime(), start2 = other.getStartTime(), end1 = this.getEndTime(), end2
+                = other.getEndTime();
+        return ((!start1.isBefore(start2) && start1.isBefore(end2)) || (!start2.isBefore(start1) && start2.isBefore(
+                end1)));
+    }
+
     @Override
     public int compareTo(Task other) {
         if (other == null) {
             throw new IllegalArgumentException();
         }
-        return Comparator.comparing(Task::getStartTime).thenComparing(Task::getClassRank).thenComparing(Task::getId)
-                .compare(this, other);
+        return Comparator.comparing(Task::getStartTime).thenComparing(Task::getId).compare(this, other);
     }
 }

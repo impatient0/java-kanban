@@ -17,11 +17,6 @@ public class Subtask extends Task {
     }
 
     @Override
-    public int getClassRank() {
-        return 2;
-    }
-
-    @Override
     public String toString() {
         return super.toString().replace("Задача", "Подзадача") + "; Относится к эпику #" + String.format("%08d",
                 epicId);
