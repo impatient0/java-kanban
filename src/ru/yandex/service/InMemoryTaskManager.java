@@ -169,10 +169,10 @@ public class InMemoryTaskManager implements TaskManager {
         }
         epics.get(id).getSubtasks().keySet().forEach(s -> {
             historyManager.remove(s);
+            prioritizedTasks.remove(subtasks.get(s));
             subtasks.remove(s);
         });
         historyManager.remove(id);
-        prioritizedTasks.remove(epics.get(id));
         epics.remove(id);
         return true;
     }
@@ -213,8 +213,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (overlappingTask.isPresent()) {
             throw new TaskOverlapException(
                     String.format("%s: пересечение по срокам выполнения с %s #%08d!", errorMessage,
-                            overlappingTask.get().getClass() == Task.class ? "задачей" :
-                                    (overlappingTask.get().getClass() == Epic.class ? "эпиком" : "подзадачей"),
+                            overlappingTask.get().getClass() == Task.class ? "задачей" : "подзадачей",
                             overlappingTask.get().getId()));
         }
     }
