@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 public class Epic extends Task {
     private HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private LocalDateTime endTime;
+    private boolean isUpdatedStatus, isUpdatedTimeAndDuration;
 
     public Epic(String name, String description, int id) {
         super(name, description, id, TaskStatus.NEW, Duration.ZERO, LocalDateTime.MIN);
@@ -25,6 +26,67 @@ public class Epic extends Task {
                         .collect(Collectors.joining(", ")));
     }
 
+    @Override
+    public TaskStatus getStatus() {
+        if (!isUpdatedStatus) {
+            updateStatus();
+        }
+        return super.getStatus();
+    }
+
+    public HashMap<Integer, Subtask> getSubtasks() {
+        return subtasks;
+    }
+
+    public boolean addSubtask(Subtask subtask) {
+        if (!subtasks.containsKey(subtask.getId())) {
+            subtasks.put(subtask.getId(), subtask);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateSubtask(Subtask subtask) {
+        if (!subtasks.containsKey(subtask.getId())) {
+            return false;
+        }
+        subtasks.put(subtask.getId(), subtask);
+        return true;
+    }
+
+    public boolean removeSubtask(Subtask subtask) {
+        return subtasks.remove(subtask.getId()) != null;
+    }
+
+    public void clearSubtasks() {
+        this.status = TaskStatus.NEW;
+        subtasks.clear();
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        if (!isUpdatedTimeAndDuration) {
+            updateTimeAndDuration();
+        }
+        return super.getStartTime();
+    }
+
+    @Override
+    public Duration getDuration() {
+        if (!isUpdatedTimeAndDuration) {
+            updateTimeAndDuration();
+        }
+        return super.getDuration();
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        if (!isUpdatedTimeAndDuration) {
+            updateTimeAndDuration();
+        }
+        return endTime;
+    }
+
     private void updateStatus() {
         if (subtasks.isEmpty()) {
             this.status = TaskStatus.NEW;
@@ -39,49 +101,7 @@ public class Epic extends Task {
             return;
         }
         this.status = TaskStatus.IN_PROGRESS;
-    }
-
-    public HashMap<Integer, Subtask> getSubtasks() {
-        return subtasks;
-    }
-
-    public boolean addSubtask(Subtask subtask) {
-        if (!subtasks.containsKey(subtask.getId())) {
-            subtasks.put(subtask.getId(), subtask);
-            updateStatus();
-            updateTimeAndDuration();
-            return true;
-        }
-        return false;
-    }
-
-    public boolean updateSubtask(Subtask subtask) {
-        if (!subtasks.containsKey(subtask.getId())) {
-            return false;
-        }
-        subtasks.put(subtask.getId(), subtask);
-        updateStatus();
-        updateTimeAndDuration();
-        return true;
-    }
-
-    public boolean removeSubtask(Subtask subtask) {
-        boolean result = subtasks.remove(subtask.getId()) != null;
-        if (result) {
-            updateStatus();
-            updateTimeAndDuration();
-        }
-        return result;
-    }
-
-    public void clearSubtasks() {
-        this.status = TaskStatus.NEW;
-        subtasks.clear();
-    }
-
-    @Override
-    public LocalDateTime getEndTime() {
-        return endTime;
+        isUpdatedStatus = true;
     }
 
     private void updateTimeAndDuration() {
@@ -90,6 +110,7 @@ public class Epic extends Task {
                 .orElse(LocalDateTime.MIN);
         endTime = subtasks.values().stream().map(Task::getEndTime).max(LocalDateTime::compareTo)
                 .orElse(LocalDateTime.MAX);
+        isUpdatedTimeAndDuration = true;
     }
 
     @Override
