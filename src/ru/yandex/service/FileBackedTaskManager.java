@@ -15,6 +15,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path saveFile;
     private static final String HEADER = "id,type,name,status,description,epic";
 
+    public Path getSaveFile() {
+        return saveFile;
+    }
+
     public FileBackedTaskManager(Path saveFile) {
         this.saveFile = saveFile;
         if (!Files.exists(saveFile)) {
@@ -175,45 +179,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         boolean result = super.removeSubtask(id);
         save();
         return result;
-    }
-
-    public static void main(String[] args) throws IOException {
-        Path saveFile = File.createTempFile("save_file", ".tmp").toPath();
-        TaskManager taskManager = new FileBackedTaskManager(saveFile);
-        LocalDateTime nowDateTime = LocalDateTime.now();
-        int t1 = taskManager.addTask(
-                new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(1),
-                        nowDateTime.plusHours(2)));
-        int t2 = taskManager.addTask(
-                new Task("Ремонт в детской комнате", "Составить список необходимых материалов и инструментов.",
-                        Duration.ofHours(72), nowDateTime.plusHours(4)));
-        int e1 = taskManager.addEpic(new Epic("Оптимизация рабочего процесса",
-                "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников."));
-        int e2 = taskManager.addEpic(new Epic("Улучшение пользовательского интерфейса",
-                "Улучшение пользовательского интерфейса приложения для повышения удобства использования и "
-                        + "привлекательности."));
-        int s1 = taskManager.addSubtask(new Subtask("Анализ текущих процессов",
-                "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1, Duration.ofHours(2), nowDateTime.plusHours(128)));
-        int s2 = taskManager.addSubtask(
-                new Subtask("Разработка рекомендаций", "Подготовка предложений по улучшению рабочих процессов.", e1,
-                        Duration.ofHours(1), nowDateTime.plusHours(130)));
-        int s3 = taskManager.addSubtask(new Subtask("Анализ текущего интерфейса",
-                "Изучение и анализ текущего пользовательского интерфейса приложения для выявления недостатков и "
-                        + "возможностей для улучшения.", e1, Duration.ofHours(3), nowDateTime.plusHours(144)));
-        TaskManager tm2 = loadFromFile(saveFile.toFile());
-        showTasks(tm2);
-    }
-
-    public static void showTasks(TaskManager taskManager) {
-        System.out.println("Задачи:");
-        System.out.println(
-                taskManager.getAllTasks().stream().map(t -> "\t" + t.toString()).collect(Collectors.joining("\n")));
-        System.out.println("Эпики:");
-        System.out.println(
-                taskManager.getAllEpics().stream().map(t -> "\t" + t.toString()).collect(Collectors.joining("\n")));
-        System.out.println("Подзадачи:");
-        System.out.println(
-                taskManager.getAllSubtasks().stream().map(t -> "\t" + t.toString()).collect(Collectors.joining("\n")));
     }
 }
