@@ -12,7 +12,9 @@ public class Epic extends Task {
 
     public Epic(String name, String description, int id) {
         super(name, description, id, TaskStatus.NEW, Duration.ZERO, LocalDateTime.MIN);
-        this.endTime = LocalDateTime.MIN;
+        this.endTime = LocalDateTime.MAX;
+        isUpdatedStatus = true;
+        isUpdatedTimeAndDuration = true;
     }
 
     public Epic(String name, String description) {
@@ -41,6 +43,8 @@ public class Epic extends Task {
     public boolean addSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
             subtasks.put(subtask.getId(), subtask);
+            isUpdatedStatus = false;
+            isUpdatedTimeAndDuration = false;
             return true;
         }
         return false;
@@ -51,15 +55,27 @@ public class Epic extends Task {
             return false;
         }
         subtasks.put(subtask.getId(), subtask);
+        isUpdatedStatus = false;
+        isUpdatedTimeAndDuration = false;
         return true;
     }
 
     public boolean removeSubtask(Subtask subtask) {
-        return subtasks.remove(subtask.getId()) != null;
+        boolean result = subtasks.remove(subtask.getId()) != null;
+        if (result) {
+            isUpdatedStatus = false;
+            isUpdatedTimeAndDuration = false;
+        }
+        return result;
     }
 
     public void clearSubtasks() {
         this.status = TaskStatus.NEW;
+        startTime = LocalDateTime.MIN;
+        endTime = LocalDateTime.MAX;
+        duration = Duration.ZERO;
+        isUpdatedStatus = true;
+        isUpdatedTimeAndDuration = true;
         subtasks.clear();
     }
 
