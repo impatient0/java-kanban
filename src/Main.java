@@ -1,18 +1,28 @@
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
-import ru.yandex.service.InMemoryTaskManager;
+import ru.yandex.service.FileBackedTaskManager;
 import ru.yandex.service.TaskManager;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 public class Main {
 
-    public static void main(String[] args) {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
-        int t1 = taskManager.addTask(new Task("Подготовка к экзамену", "Составить план подготовки к экзамену."));
+    public static void main(String[] args) throws IOException {
+        Path saveFile = File.createTempFile("save_file", ".tmp").toPath();
+        TaskManager taskManager = new FileBackedTaskManager(saveFile);
+        LocalDateTime nowDateTime = LocalDateTime.now();
+        int t1 = taskManager.addTask(
+                new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(1),
+                        nowDateTime.plusHours(2)));
         int t2 = taskManager.addTask(
-                new Task("Ремонт в детской комнате", "Составить список необходимых материалов и инструментов."));
+                new Task("Ремонт в детской комнате", "Составить список необходимых материалов и инструментов.",
+                        Duration.ofHours(72), nowDateTime.plusHours(4)));
         int e1 = taskManager.addEpic(new Epic("Оптимизация рабочего процесса",
                 "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников."));
         int e2 = taskManager.addEpic(new Epic("Улучшение пользовательского интерфейса",
@@ -20,12 +30,13 @@ public class Main {
                         + "привлекательности."));
         int s1 = taskManager.addSubtask(new Subtask("Анализ текущих процессов",
                 "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1));
+                        + "для оптимизации.", e1, Duration.ofHours(2), nowDateTime.plusHours(128)));
         int s2 = taskManager.addSubtask(
-                new Subtask("Разработка рекомендаций", "Подготовка предложений по улучшению рабочих процессов.", e1));
+                new Subtask("Разработка рекомендаций", "Подготовка предложений по улучшению рабочих процессов.", e1,
+                        Duration.ofHours(1), nowDateTime.plusHours(130)));
         int s3 = taskManager.addSubtask(new Subtask("Анализ текущего интерфейса",
                 "Изучение и анализ текущего пользовательского интерфейса приложения для выявления недостатков и "
-                        + "возможностей для улучшения.", e1));
+                        + "возможностей для улучшения.", e1, Duration.ofHours(3), nowDateTime.plusHours(144)));
         System.out.println("Изначальный список задач:");
         showTasks(taskManager);
         showHistory(taskManager);

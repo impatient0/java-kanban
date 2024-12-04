@@ -1,13 +1,20 @@
 package ru.yandex.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class Epic extends Task {
-    private HashMap<Integer, TaskStatus> subtasks = new HashMap<>();
+    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private LocalDateTime endTime;
+    private boolean isUpdatedStatus, isUpdatedTimeAndDuration;
 
     public Epic(String name, String description, int id) {
-        super(name, description, id, TaskStatus.NEW);
+        super(name, description, id, TaskStatus.NEW, Duration.ZERO, LocalDateTime.MIN);
+        this.endTime = LocalDateTime.MAX;
+        isUpdatedStatus = true;
+        isUpdatedTimeAndDuration = true;
     }
 
     public Epic(String name, String description) {
@@ -21,55 +28,105 @@ public class Epic extends Task {
                         .collect(Collectors.joining(", ")));
     }
 
-    private void updateStatus() {
-        if (subtasks.isEmpty()) {
-            this.status = TaskStatus.NEW;
-            return;
+    @Override
+    public TaskStatus getStatus() {
+        if (!isUpdatedStatus) {
+            updateStatus();
         }
-        if (subtasks.values().stream().allMatch(TaskStatus.NEW::equals)) {
-            this.status = TaskStatus.NEW;
-            return;
-        }
-        if (subtasks.values().stream().allMatch(TaskStatus.DONE::equals)) {
-            this.status = TaskStatus.DONE;
-            return;
-        }
-        this.status = TaskStatus.IN_PROGRESS;
+        return super.getStatus();
     }
 
-    public HashMap<Integer, TaskStatus> getSubtasks() {
+    public HashMap<Integer, Subtask> getSubtasks() {
         return subtasks;
     }
 
     public boolean addSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
-            subtasks.put(subtask.getId(), subtask.getStatus());
-            updateStatus();
+            subtasks.put(subtask.getId(), subtask);
+            isUpdatedStatus = false;
+            isUpdatedTimeAndDuration = false;
             return true;
         }
         return false;
     }
 
     public boolean updateSubtask(Subtask subtask) {
-        if (!this.subtasks.containsKey(subtask.getId())) {
+        if (!subtasks.containsKey(subtask.getId())) {
             return false;
         }
-        this.subtasks.put(subtask.getId(), subtask.getStatus());
-        updateStatus();
+        subtasks.put(subtask.getId(), subtask);
+        isUpdatedStatus = false;
+        isUpdatedTimeAndDuration = false;
         return true;
     }
 
     public boolean removeSubtask(Subtask subtask) {
         boolean result = subtasks.remove(subtask.getId()) != null;
         if (result) {
-            updateStatus();
+            isUpdatedStatus = false;
+            isUpdatedTimeAndDuration = false;
         }
         return result;
     }
 
     public void clearSubtasks() {
         this.status = TaskStatus.NEW;
+        startTime = LocalDateTime.MIN;
+        endTime = LocalDateTime.MAX;
+        duration = Duration.ZERO;
+        isUpdatedStatus = true;
+        isUpdatedTimeAndDuration = true;
         subtasks.clear();
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        if (!isUpdatedTimeAndDuration) {
+            updateTimeAndDuration();
+        }
+        return super.getStartTime();
+    }
+
+    @Override
+    public Duration getDuration() {
+        if (!isUpdatedTimeAndDuration) {
+            updateTimeAndDuration();
+        }
+        return super.getDuration();
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        if (!isUpdatedTimeAndDuration) {
+            updateTimeAndDuration();
+        }
+        return endTime;
+    }
+
+    private void updateStatus() {
+        if (subtasks.isEmpty()) {
+            this.status = TaskStatus.NEW;
+            return;
+        }
+        if (subtasks.values().stream().allMatch(s -> s.getStatus().equals(TaskStatus.NEW))) {
+            this.status = TaskStatus.NEW;
+            return;
+        }
+        if (subtasks.values().stream().allMatch(s -> s.getStatus().equals(TaskStatus.DONE))) {
+            this.status = TaskStatus.DONE;
+            return;
+        }
+        this.status = TaskStatus.IN_PROGRESS;
+        isUpdatedStatus = true;
+    }
+
+    private void updateTimeAndDuration() {
+        duration = subtasks.values().stream().map(Task::getDuration).reduce(Duration.ZERO, Duration::plus);
+        startTime = subtasks.values().stream().map(Task::getStartTime).min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MIN);
+        endTime = subtasks.values().stream().map(Task::getEndTime).max(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.MAX);
+        isUpdatedTimeAndDuration = true;
     }
 
     @Override
@@ -80,11 +137,7 @@ public class Epic extends Task {
     @Override
     public Epic clone() throws CloneNotSupportedException {
         Epic clone = (Epic) super.clone();
-        HashMap<Integer, TaskStatus> clonedSubtasks = new HashMap<>();
-        for (Integer id : this.subtasks.keySet()) {
-            clonedSubtasks.put(id, this.subtasks.get(id));
-        }
-        clone.subtasks = clonedSubtasks;
+        clone.subtasks = new HashMap<>(this.subtasks);
         return clone;
     }
 }

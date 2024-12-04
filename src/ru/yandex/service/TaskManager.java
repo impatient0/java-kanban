@@ -7,6 +7,7 @@ import ru.yandex.model.Task;
 import java.util.List;
 
 public interface TaskManager {
+
     int addTask(Task task);
 
     int addSubtask(Subtask subtask);
@@ -44,6 +45,8 @@ public interface TaskManager {
     boolean removeSubtask(int id);
 
     List<Subtask> getSubtasks(int id);
+
+    List<Task> getPrioritizedTasks();
 
     List<Task> getHistory();
 }
