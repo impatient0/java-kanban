@@ -1,6 +1,7 @@
 package ru.yandex.service;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.exceptions.TaskNotFoundException;
 import ru.yandex.model.Task;
 import ru.yandex.model.TaskStatus;
 
@@ -22,7 +23,7 @@ class ManagersTest {
                 LocalDateTime.MIN));
         assertEquals(TaskStatus.IN_PROGRESS, taskManager.getTask(taskId).getStatus());
         taskManager.removeTask(taskId);
-        assertNull(taskManager.getTask(taskId));
+        assertThrows(TaskNotFoundException.class, ()-> taskManager.getTask(taskId));
     }
 
     @Test

@@ -135,6 +135,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
+        if (task == null) throw new TaskNotFoundException(String.format("Задача #%08d не существует.", id));
         historyManager.add(task);
         return task;
     }
@@ -142,6 +143,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpic(int id) {
         Epic epic = epics.get(id);
+        if (epic == null) throw new TaskNotFoundException(String.format("Эпик #%08d не существует.", id));
         historyManager.add(epic);
         return epic;
     }
@@ -149,6 +151,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = subtasks.get(id);
+        if (subtask == null) throw new TaskNotFoundException(String.format("Подзадача #%08d не существует.", id));
         historyManager.add(subtask);
         return subtask;
     }
