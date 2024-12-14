@@ -19,7 +19,6 @@ public class TaskHandler extends RequestHandler {
         switch (RequestParser.getEndpoint(exchange)) {
             case GET_ALL -> {
                 String body = gson.toJson(taskManager.getAllTasks());
-                System.err.println(body);
                 sendText(exchange, body, 200);
             }
             case GET_BY_ID -> {
@@ -33,7 +32,7 @@ public class TaskHandler extends RequestHandler {
             }
             case CREATE -> {
                 try {
-                    Task task = gson.fromJson(exchange.getRequestBody().toString(), Task.class);
+                    Task task = gson.fromJson(new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET), Task.class);
                     if (task.getId() == -1) {
                         taskManager.addTask(task);
                     } else {

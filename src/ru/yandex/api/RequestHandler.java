@@ -5,7 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import ru.yandex.service.TaskManager;
@@ -15,6 +16,7 @@ import ru.yandex.util.LocalDateTimeAdapter;
 abstract class RequestHandler implements HttpHandler {
     protected final TaskManager taskManager;
     protected final Gson gson;
+    protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     RequestHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
@@ -26,9 +28,8 @@ abstract class RequestHandler implements HttpHandler {
         byte[] response = body.getBytes();
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(responseCode, response.length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response);
-        }
+        exchange.getResponseBody().write(response);
+        exchange.close();
     }
 
     protected void sendBadRequest(HttpExchange exchange) throws IOException {
