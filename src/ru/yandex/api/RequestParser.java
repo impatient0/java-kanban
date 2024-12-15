@@ -1,8 +1,13 @@
 package ru.yandex.api;
 
-import com.sun.net.httpserver.HttpExchange;
+import static ru.yandex.api.Endpoint.CREATE;
+import static ru.yandex.api.Endpoint.GET_ALL;
+import static ru.yandex.api.Endpoint.GET_BY_ID;
+import static ru.yandex.api.Endpoint.GET_SUBTASKS;
+import static ru.yandex.api.Endpoint.REMOVE;
+import static ru.yandex.api.Endpoint.UNKNOWN;
 
-import static ru.yandex.api.Endpoint.*;
+import com.sun.net.httpserver.HttpExchange;
 
 public class RequestParser {
 

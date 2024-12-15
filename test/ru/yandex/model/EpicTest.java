@@ -1,12 +1,13 @@
 package ru.yandex.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class EpicTest {
 
@@ -19,11 +20,13 @@ class EpicTest {
     @BeforeEach
     void setUp() {
         nowDateTime = LocalDateTime.now();
-        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.NEW, 42, Duration.ofHours(42), nowDateTime);
+        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.NEW, 42, Duration.ofHours(42),
+            nowDateTime);
         subtask2 = new Subtask("_s2name_", "_s2desc_", 2, TaskStatus.NEW, 42, Duration.ofHours(69),
-                nowDateTime.plusHours(100));
-        subtask3 = new Subtask("_s3name_", "_s3desc_", 3, TaskStatus.IN_PROGRESS, 42, Duration.ofHours(14),
-                nowDateTime.plusHours(200));
+            nowDateTime.plusHours(100));
+        subtask3 = new Subtask("_s3name_", "_s3desc_", 3, TaskStatus.IN_PROGRESS, 42,
+            Duration.ofHours(14),
+            nowDateTime.plusHours(200));
         epic = new Epic("_ename_", "_edesc_", 42);
     }
 
@@ -49,7 +52,8 @@ class EpicTest {
         epic.addSubtask(subtask2);
         epic.addSubtask(subtask3);
         assertTrue(
-                epic.getSubtasks().containsKey(3) && epic.getSubtasks().get(3).getStatus() == TaskStatus.IN_PROGRESS);
+            epic.getSubtasks().containsKey(3)
+                && epic.getSubtasks().get(3).getStatus() == TaskStatus.IN_PROGRESS);
     }
 
     @Test
@@ -79,7 +83,8 @@ class EpicTest {
     void shouldUpdateSubtask() {
         epic.addSubtask(subtask1);
         epic.addSubtask(subtask2);
-        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.DONE, 42, Duration.ofHours(42), nowDateTime);
+        subtask1 = new Subtask("_s1name_", "_s1desc_", 1, TaskStatus.DONE, 42, Duration.ofHours(42),
+            nowDateTime);
         epic.updateSubtask(subtask1);
         assertEquals(TaskStatus.DONE, epic.getSubtasks().get(1).getStatus());
     }
@@ -103,8 +108,9 @@ class EpicTest {
         clonedEpic.removeSubtask(subtask3);
         assertTrue(epic.getSubtasks().containsKey(subtask3.getId()));
         clonedEpic.updateSubtask(
-                new Subtask(subtask2.getName(), subtask2.getDescription(), subtask2.getId(), TaskStatus.DONE,
-                        epic.getId(), subtask2.getDuration(), subtask2.getStartTime()));
+            new Subtask(subtask2.getName(), subtask2.getDescription(), subtask2.getId(),
+                TaskStatus.DONE,
+                epic.getId(), subtask2.getDuration(), subtask2.getStartTime()));
         assertEquals(TaskStatus.NEW, epic.getSubtasks().get(subtask2.getId()).getStatus());
         epic.clearSubtasks();
         assertFalse(clonedEpic.getSubtasks().isEmpty());
@@ -116,8 +122,9 @@ class EpicTest {
         epic.addSubtask(subtask2);
         epic.addSubtask(subtask3);
         assertEquals(subtask1.getStartTime(), epic.getStartTime());
-        assertEquals(subtask1.getDuration().plus(subtask2.getDuration()).plus(subtask3.getDuration()),
-                epic.getDuration());
+        assertEquals(
+            subtask1.getDuration().plus(subtask2.getDuration()).plus(subtask3.getDuration()),
+            epic.getDuration());
         assertEquals(subtask3.getEndTime(), epic.getEndTime());
     }
 
@@ -127,8 +134,9 @@ class EpicTest {
         epic.addSubtask(subtask2);
         epic.addSubtask(subtask3);
         epic.removeSubtask(subtask1);
-        Subtask anotherSubtask = new Subtask(subtask3.getName(), subtask3.getDescription(), subtask3.getId(),
-                subtask3.getStatus(), epic.getId(), Duration.ofHours(28), nowDateTime.plusHours(420));
+        Subtask anotherSubtask = new Subtask(subtask3.getName(), subtask3.getDescription(),
+            subtask3.getId(),
+            subtask3.getStatus(), epic.getId(), Duration.ofHours(28), nowDateTime.plusHours(420));
         epic.updateSubtask(anotherSubtask);
         assertEquals(subtask2.getStartTime(), epic.getStartTime());
         assertEquals(subtask2.getDuration().plus(anotherSubtask.getDuration()), epic.getDuration());

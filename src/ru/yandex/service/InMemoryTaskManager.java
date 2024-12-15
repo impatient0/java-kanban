@@ -1,15 +1,19 @@
 package ru.yandex.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import ru.yandex.exceptions.TaskNotFoundException;
 import ru.yandex.exceptions.TaskOverlapException;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class InMemoryTaskManager implements TaskManager {
+
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
@@ -34,8 +38,9 @@ public class InMemoryTaskManager implements TaskManager {
         checkOverlap(subtask, "Невозможно добавить подзадачу");
         if (!epics.containsKey(subtask.getEpicId())) {
             throw new TaskNotFoundException(
-                    "Невозможно добавить подзадачу к эпику #" + String.format("%08d", subtask.getEpicId())
-                            + ": такого эпика не существует!");
+                "Невозможно добавить подзадачу к эпику #" + String.format("%08d",
+                    subtask.getEpicId())
+                    + ": такого эпика не существует!");
         }
         int id = freeId++;
         subtask.setId(id);
@@ -56,7 +61,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {
         if (!tasks.containsKey(task.getId())) {
-            throw new TaskNotFoundException("Невозможно обновить задачу #" + String.format("%08d", task.getId())
+            throw new TaskNotFoundException(
+                "Невозможно обновить задачу #" + String.format("%08d", task.getId())
                     + ": такой задачи не существует!");
         }
         checkOverlap(task, "Невозможно обновить задачу");
@@ -68,7 +74,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask subtask) {
         if (!subtasks.containsKey(subtask.getId())) {
-            throw new TaskNotFoundException("Невозможно обновить подзадачу #" + String.format("%08d", subtask.getId())
+            throw new TaskNotFoundException(
+                "Невозможно обновить подзадачу #" + String.format("%08d", subtask.getId())
                     + ": такой подзадачи не существует!");
         }
         checkOverlap(subtask, "Невозможно обновить подзадачу");
@@ -81,7 +88,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateEpic(Epic epic) {
         if (!epics.containsKey(epic.getId())) {
-            throw new TaskNotFoundException("Невозможно обновить эпик #" + String.format("%08d", epic.getId())
+            throw new TaskNotFoundException(
+                "Невозможно обновить эпик #" + String.format("%08d", epic.getId())
                     + ": такого эпика не существует!");
         }
         Epic oldEpic = epics.get(epic.getId());
@@ -135,7 +143,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
-        if (task == null) throw new TaskNotFoundException(String.format("Задача #%08d не существует.", id));
+        if (task == null) {
+            throw new TaskNotFoundException(String.format("Задача #%08d не существует.", id));
+        }
         historyManager.add(task);
         return task;
     }
@@ -143,7 +153,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpic(int id) {
         Epic epic = epics.get(id);
-        if (epic == null) throw new TaskNotFoundException(String.format("Эпик #%08d не существует.", id));
+        if (epic == null) {
+            throw new TaskNotFoundException(String.format("Эпик #%08d не существует.", id));
+        }
         historyManager.add(epic);
         return epic;
     }
@@ -151,7 +163,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = subtasks.get(id);
-        if (subtask == null) throw new TaskNotFoundException(String.format("Подзадача #%08d не существует.", id));
+        if (subtask == null) {
+            throw new TaskNotFoundException(String.format("Подзадача #%08d не существует.", id));
+        }
         historyManager.add(subtask);
         return subtask;
     }
@@ -196,7 +210,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Subtask> getSubtasks(int id) {
         Epic epic = epics.get(id);
-        return epic == null ? new ArrayList<>() : epic.getSubtasks().keySet().stream().map(subtasks::get)
+        return epic == null ? new ArrayList<>()
+            : epic.getSubtasks().keySet().stream().map(subtasks::get)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -211,13 +226,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void checkOverlap(Task task, String errorMessage) {
-        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(task::overlaps).filter(t -> !task.equals(t))
-                .findFirst();
+        Optional<Task> overlappingTask = prioritizedTasks.stream().filter(task::overlaps)
+            .filter(t -> !task.equals(t))
+            .findFirst();
         if (overlappingTask.isPresent()) {
             throw new TaskOverlapException(
-                    String.format("%s: пересечение по срокам выполнения с %s #%08d!", errorMessage,
-                            overlappingTask.get().getClass() == Task.class ? "задачей" : "подзадачей",
-                            overlappingTask.get().getId()));
+                String.format("%s: пересечение по срокам выполнения с %s #%08d!", errorMessage,
+                    overlappingTask.get().getClass() == Task.class ? "задачей" : "подзадачей",
+                    overlappingTask.get().getId()));
         }
     }
 }

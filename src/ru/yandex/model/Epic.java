@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 public class Epic extends Task {
+
     private HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private LocalDateTime endTime;
     private boolean isUpdatedStatus, isUpdatedTimeAndDuration;
@@ -23,9 +24,10 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return super.toString().replace("Задача", "Эпик") + "; Подзадачи: " + (subtasks.isEmpty() ? "нет" :
-                subtasks.keySet().stream().map(st -> "#" + String.format("%08d", st))
-                        .collect(Collectors.joining(", ")));
+        return super.toString().replace("Задача", "Эпик") + "; Подзадачи: " + (subtasks.isEmpty()
+            ? "нет" :
+            subtasks.keySet().stream().map(st -> "#" + String.format("%08d", st))
+                .collect(Collectors.joining(", ")));
     }
 
     @Override
@@ -121,11 +123,12 @@ public class Epic extends Task {
     }
 
     private void updateTimeAndDuration() {
-        duration = subtasks.values().stream().map(Task::getDuration).reduce(Duration.ZERO, Duration::plus);
+        duration = subtasks.values().stream().map(Task::getDuration)
+            .reduce(Duration.ZERO, Duration::plus);
         startTime = subtasks.values().stream().map(Task::getStartTime).min(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.MIN);
+            .orElse(LocalDateTime.MIN);
         endTime = subtasks.values().stream().map(Task::getEndTime).max(LocalDateTime::compareTo)
-                .orElse(LocalDateTime.MAX);
+            .orElse(LocalDateTime.MAX);
         isUpdatedTimeAndDuration = true;
     }
 

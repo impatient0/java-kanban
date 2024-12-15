@@ -27,36 +27,21 @@ public class HttpTaskServer {
         taskServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
     }
 
-    public void start() {
-        taskServer.start();
-    }
-
-    public void stop(int delay) {
-        taskServer.stop(delay);
-    }
-
     public static void main(String[] args) throws IOException {
         Gson gson = new GsonBuilder().registerTypeAdapter(Duration.class, new DurationTypeAdapter())
             .registerTypeAdapter(
                 LocalDateTime.class, new LocalDateTimeAdapter()).create();
         TaskManager tm = Managers.getDefault();
         HttpTaskServer hts = new HttpTaskServer(tm);
-//        Task t = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.",
-//            Duration.ofHours(1),
-//            LocalDateTime.MIN.plusHours(2));
-//        Epic e = new Epic("Оптимизация рабочего процесса",
-//            "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
-//
-//        int t1 = tm.addTask(t);
-//        int e1 = tm.addEpic(e);
-//        Subtask s = new Subtask("Анализ текущих процессов",
-//            "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-//                + "для оптимизации.", e1, Duration.ofHours(2), LocalDateTime.MIN.plusHours(128));
-//        int s1 = tm.addSubtask(s);
-//        String ts = gson.toJson(t);
-//        System.out.println(ts);
-//        System.out.println(gson.fromJson(ts, Task.class));
         hts.start();
+    }
+
+    public void start() {
+        taskServer.start();
+    }
+
+    public void stop(int delay) {
+        taskServer.stop(delay);
     }
 }
 

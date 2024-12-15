@@ -1,13 +1,10 @@
 package ru.yandex.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import ru.yandex.exceptions.ManagerLoadException;
-import ru.yandex.exceptions.ManagerSaveException;
-import ru.yandex.model.Epic;
-import ru.yandex.model.Subtask;
-import ru.yandex.model.Task;
-import ru.yandex.model.TaskStatus;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,20 +15,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import ru.yandex.exceptions.ManagerLoadException;
+import ru.yandex.exceptions.ManagerSaveException;
+import ru.yandex.model.Epic;
+import ru.yandex.model.Subtask;
+import ru.yandex.model.Task;
+import ru.yandex.model.TaskStatus;
 
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-    private final Path testSaveFile = Paths.get("test/ru/yandex/service/resource/test_save_file.txt"), badSaveFile
-            = Paths.get("test/ru/yandex/service/resource/bad_save_file.txt");
+    private final Path testSaveFile = Paths.get(
+        "test/ru/yandex/service/resource/test_save_file.txt"), badSaveFile
+        = Paths.get("test/ru/yandex/service/resource/bad_save_file.txt");
     private FileBackedTaskManager taskManager;
     private LocalDateTime nowDateTime;
 
     FileBackedTaskManagerTest() {
         super(() -> {
             try {
-                return new FileBackedTaskManager(File.createTempFile("test_save_file", ".tmp").toPath());
+                return new FileBackedTaskManager(
+                    File.createTempFile("test_save_file", ".tmp").toPath());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -47,7 +52,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     @Test
     void shouldLoadFromEmptyFile() {
         assertTrue(taskManager.getAllTasks().isEmpty() && taskManager.getAllSubtasks().isEmpty()
-                && taskManager.getAllEpics().isEmpty());
+            && taskManager.getAllEpics().isEmpty());
     }
 
     @Test
@@ -55,7 +60,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         Files.delete(taskManager.getSaveFile());
         assertFalse(Files.exists(taskManager.getSaveFile()));
         assertTrue(taskManager.getAllTasks().isEmpty() && taskManager.getAllSubtasks().isEmpty()
-                && taskManager.getAllEpics().isEmpty());
+            && taskManager.getAllEpics().isEmpty());
         taskManager = new FileBackedTaskManager(taskManager.getSaveFile());
         assertTrue(Files.exists(taskManager.getSaveFile()));
     }
@@ -69,25 +74,27 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals("Подготовка к экзамену", task.getName());
         assertEquals(TaskStatus.NEW, epic.getStatus());
         assertEquals(
-                "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", subtask.getDescription());
+            "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
+                + "для оптимизации.", subtask.getDescription());
         assertEquals(1, subtask.getEpicId());
         assertTrue(epic.getSubtasks().containsKey(2));
     }
 
     @Test
     void shouldSaveToAndLoadTasksFromFile() {
-        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(42),
-                nowDateTime);
+        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.",
+            Duration.ofHours(42),
+            nowDateTime);
         taskManager.addTask(task);
         Epic epic = new Epic("Оптимизация рабочего процесса",
-                "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
+            "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
         int e1 = taskManager.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
-                "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
+            "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
+                + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
         taskManager.addSubtask(subtask);
-        assertDoesNotThrow(() -> FileBackedTaskManager.loadFromFile(taskManager.getSaveFile().toFile()));
+        assertDoesNotThrow(
+            () -> FileBackedTaskManager.loadFromFile(taskManager.getSaveFile().toFile()));
         TaskManager tm2 = FileBackedTaskManager.loadFromFile(taskManager.getSaveFile().toFile());
         assertEquals(taskManager.getTask(0).getName(), tm2.getTask(0).getName());
         assertEquals(taskManager.getTask(0).getDescription(), tm2.getTask(0).getDescription());
@@ -101,7 +108,8 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals(taskManager.getEpic(1).getDuration(), tm2.getEpic(1).getDuration());
         assertEquals(taskManager.getEpic(1).getEndTime(), tm2.getEpic(1).getEndTime());
         assertEquals(taskManager.getSubtask(2).getName(), tm2.getSubtask(2).getName());
-        assertEquals(taskManager.getSubtask(2).getDescription(), tm2.getSubtask(2).getDescription());
+        assertEquals(taskManager.getSubtask(2).getDescription(),
+            tm2.getSubtask(2).getDescription());
         assertEquals(taskManager.getSubtask(2).getStatus(), tm2.getSubtask(2).getStatus());
         assertEquals(taskManager.getSubtask(2).getStartTime(), tm2.getSubtask(2).getStartTime());
         assertEquals(taskManager.getSubtask(2).getDuration(), tm2.getSubtask(2).getDuration());
@@ -110,17 +118,19 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     @Test
     void shouldSaveTasksToFile() throws IOException {
-        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(42),
-                nowDateTime);
+        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.",
+            Duration.ofHours(42),
+            nowDateTime);
         taskManager.addTask(task);
         Epic epic = new Epic("Оптимизация рабочего процесса",
-                "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
+            "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
         int e1 = taskManager.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
-                "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
+            "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
+                + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
         taskManager.addSubtask(subtask);
-        try (BufferedReader input = new BufferedReader(new FileReader(taskManager.getSaveFile().toFile()))) {
+        try (BufferedReader input = new BufferedReader(
+            new FileReader(taskManager.getSaveFile().toFile()))) {
             input.readLine();
             assertEquals(task.getCSV(), input.readLine());
             assertEquals(epic.getCSV(), input.readLine());
@@ -130,20 +140,22 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     @Test
     void shouldThrowExceptionOnInvalidFile() {
-        assertThrows(ManagerLoadException.class, () -> FileBackedTaskManager.loadFromFile(badSaveFile.toFile()));
+        assertThrows(ManagerLoadException.class,
+            () -> FileBackedTaskManager.loadFromFile(badSaveFile.toFile()));
     }
 
     @Test
     void shouldPreserveIdsUponDeletion() {
-        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.", Duration.ofHours(42),
-                nowDateTime);
+        Task task = new Task("Подготовка к экзамену", "Составить план подготовки к экзамену.",
+            Duration.ofHours(42),
+            nowDateTime);
         taskManager.addTask(task);
         Epic epic = new Epic("Оптимизация рабочего процесса",
-                "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
+            "Оптимизация рабочего процесса компании для повышения эффективности и продуктивности сотрудников.");
         int e1 = taskManager.addEpic(epic);
         Subtask subtask = new Subtask("Анализ текущих процессов",
-                "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
-                        + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
+            "Изучение и анализ существующих рабочих процессов компании для выявления узких мест и возможностей "
+                + "для оптимизации.", e1, Duration.ofHours(69), nowDateTime.plusHours(100));
         taskManager.addSubtask(subtask);
         taskManager.removeTask(0);
         TaskManager tm2 = FileBackedTaskManager.loadFromFile(taskManager.getSaveFile().toFile());
@@ -153,6 +165,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     @Test
     void shouldThrowExceptionOnIncorrectSaveFilePath() {
-        assertThrows(ManagerSaveException.class, () -> new FileBackedTaskManager(Path.of("lol/kek/cheburek")));
+        assertThrows(ManagerSaveException.class,
+            () -> new FileBackedTaskManager(Path.of("lol/kek/cheburek")));
     }
 }

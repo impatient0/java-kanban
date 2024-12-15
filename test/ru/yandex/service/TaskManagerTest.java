@@ -1,5 +1,16 @@
 package ru.yandex.service;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.exceptions.TaskNotFoundException;
@@ -8,13 +19,6 @@ import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
 import ru.yandex.model.TaskStatus;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
 
@@ -81,8 +85,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
             new Task("_t1name_", "_t1desc_", Duration.ZERO, nowDateTime));
         taskManager.updateTask(
             new Task("_anothertname_", "_anothertdesc_", taskId, TaskStatus.IN_PROGRESS,
-                Duration.ofHours(14),
-                nowDateTime.plusHours(14)));
+                Duration.ofHours(14), nowDateTime.plusHours(14)));
         assertEquals("_anothertname_", taskManager.getTask(taskId).getName());
         assertEquals("_anothertdesc_", taskManager.getTask(taskId).getDescription());
         assertEquals(TaskStatus.IN_PROGRESS, taskManager.getTask(taskId).getStatus());
@@ -97,8 +100,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
             new Subtask("_s1name_", "_s1desc_", epicId, Duration.ZERO, LocalDateTime.MIN));
         taskManager.updateSubtask(
             new Subtask("_anothersname_", "_anothersdesc_", subtaskId, TaskStatus.IN_PROGRESS,
-                epicId,
-                Duration.ofHours(14), nowDateTime.plusHours(14)));
+                epicId, Duration.ofHours(14), nowDateTime.plusHours(14)));
         assertEquals("_anothersname_", taskManager.getSubtask(subtaskId).getName());
         assertEquals("_anothersdesc_", taskManager.getSubtask(subtaskId).getDescription());
         assertEquals(Duration.ofHours(14), taskManager.getSubtask(subtaskId).getDuration());
@@ -338,8 +340,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.getEpic(epicId);
         taskManager.getSubtask(subtaskId);
         Task anotherTask = new Task("_anothertname_", "_anothertdesc_", taskId,
-            TaskStatus.IN_PROGRESS, Duration.ZERO,
-            LocalDateTime.MIN);
+            TaskStatus.IN_PROGRESS, Duration.ZERO, LocalDateTime.MIN);
         taskManager.updateTask(anotherTask);
         taskManager.removeEpic(epicId);
         List<Task> history = taskManager.getHistory();
@@ -363,20 +364,16 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task1 = new Task("_t1name_", "_t1desc_", -1, TaskStatus.IN_PROGRESS,
             Duration.ofHours(42), nowDateTime);
         Task task2 = new Task("_t2name_", "_t2desc_", -1, TaskStatus.IN_PROGRESS,
-            Duration.ofHours(69),
-            nowDateTime.plusHours(69));
+            Duration.ofHours(69), nowDateTime.plusHours(69));
         Task task3 = new Task("_t3name_", "_t3desc_", -1, TaskStatus.IN_PROGRESS,
-            Duration.ofHours(69),
-            nowDateTime.plusHours(14));
+            Duration.ofHours(69), nowDateTime.plusHours(14));
         taskManager.addTask(task1);
         int task2id = taskManager.addTask(task2);
         assertThrows(TaskOverlapException.class, () -> taskManager.addTask(task3));
         Task goodUpdate = new Task("_t2name_", "_t2desc_", task2id, TaskStatus.IN_PROGRESS,
-            Duration.ofHours(69),
-            nowDateTime.plusHours(42));
+            Duration.ofHours(69), nowDateTime.plusHours(42));
         Task badUpdate = new Task("_t2name_", "_t2desc_", task2id, TaskStatus.IN_PROGRESS,
-            Duration.ofHours(69),
-            nowDateTime.plusHours(14));
+            Duration.ofHours(69), nowDateTime.plusHours(14));
         assertDoesNotThrow(() -> taskManager.updateTask(goodUpdate));
         assertThrows(TaskOverlapException.class, () -> taskManager.updateTask(badUpdate));
     }

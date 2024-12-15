@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 public class Task implements Cloneable, Comparable<Task> {
+
     protected String name;
     protected String description;
     protected int id;
@@ -14,7 +15,7 @@ public class Task implements Cloneable, Comparable<Task> {
     protected LocalDateTime startTime;
 
     public Task(String name, String description, int id, TaskStatus status, Duration duration,
-                LocalDateTime startTime) {
+        LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.id = id;
@@ -98,12 +99,14 @@ public class Task implements Cloneable, Comparable<Task> {
 
     @Override
     public String toString() {
-        return "Задача #" + String.format("%08d", id) + " \"" + name + "\": " + description + " Статус: " + status;
+        return "Задача #" + String.format("%08d", id) + " \"" + name + "\": " + description
+            + " Статус: " + status;
     }
 
     public String getCSV() {
-        return String.format("%d,%s,%s,%s,%s,%s,%s,", id, TaskType.TASK, name, status, description, duration.toString(),
-                startTime.toString());
+        return String.format("%d,%s,%s,%s,%s,%s,%s,", id, TaskType.TASK, name, status, description,
+            duration.toString(),
+            startTime.toString());
     }
 
     @Override
@@ -118,9 +121,10 @@ public class Task implements Cloneable, Comparable<Task> {
 
     public boolean overlaps(Task other) {
         LocalDateTime start1 = this.getStartTime(), start2 = other.getStartTime(), end1 = this.getEndTime(), end2
-                = other.getEndTime();
-        return ((!start1.isBefore(start2) && start1.isBefore(end2)) || (!start2.isBefore(start1) && start2.isBefore(
-                end1)));
+            = other.getEndTime();
+        return ((!start1.isBefore(start2) && start1.isBefore(end2)) || (!start2.isBefore(start1)
+            && start2.isBefore(
+            end1)));
     }
 
     @Override

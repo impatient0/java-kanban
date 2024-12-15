@@ -1,16 +1,17 @@
 package ru.yandex.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import ru.yandex.model.Task;
-import ru.yandex.model.TaskStatus;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import ru.yandex.model.Task;
+import ru.yandex.model.TaskStatus;
 
 abstract class HistoryManagerTest<T extends HistoryManager> {
 
@@ -27,9 +28,12 @@ abstract class HistoryManagerTest<T extends HistoryManager> {
     @BeforeEach
     void setUp() {
         historyManager = factory.get();
-        task1 = new Task("_t1name_", "_t1desc_", 42, TaskStatus.NEW, Duration.ZERO, LocalDateTime.MIN);
-        task2 = new Task("_t2name_", "_t2desc_", 69, TaskStatus.NEW, Duration.ZERO, LocalDateTime.MIN);
-        task3 = new Task("_t3name_", "_t3desc_", 1337, TaskStatus.NEW, Duration.ZERO, LocalDateTime.MIN);
+        task1 = new Task("_t1name_", "_t1desc_", 42, TaskStatus.NEW, Duration.ZERO,
+            LocalDateTime.MIN);
+        task2 = new Task("_t2name_", "_t2desc_", 69, TaskStatus.NEW, Duration.ZERO,
+            LocalDateTime.MIN);
+        task3 = new Task("_t3name_", "_t3desc_", 1337, TaskStatus.NEW, Duration.ZERO,
+            LocalDateTime.MIN);
     }
 
     @Test

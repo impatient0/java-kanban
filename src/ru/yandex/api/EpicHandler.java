@@ -36,7 +36,8 @@ public class EpicHandler extends RequestHandler {
             }
             case CREATE -> {
                 try {
-                    Epic epic = gson.fromJson(new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET),
+                    Epic epic = gson.fromJson(
+                        new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET),
                         Epic.class);
                     taskManager.addEpic(epic);
                     sendText(exchange, "", 201);
