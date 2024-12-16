@@ -49,4 +49,9 @@ abstract class RequestHandler implements HttpHandler {
         exchange.sendResponseHeaders(406, 0);
         exchange.close();
     }
+
+    protected void sendInternalError(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(500, 0);
+        exchange.close();
+    }
 }

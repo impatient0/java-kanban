@@ -27,12 +27,18 @@ public class EpicHandler extends RequestHandler {
                     sendText(exchange, body, 200);
                 } catch (TaskNotFoundException e) {
                     sendNotFound(exchange);
+                } catch (Exception e) {
+                    sendInternalError(exchange);
                 }
             }
             case GET_SUBTASKS -> {
-                int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
-                String body = gson.toJson(taskManager.getSubtasks(id));
-                sendText(exchange, body, 200);
+                try {
+                    int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
+                    String body = gson.toJson(taskManager.getSubtasks(id));
+                    sendText(exchange, body, 200);
+                } catch (Exception e) {
+                    sendInternalError(exchange);
+                }
             }
             case CREATE -> {
                 try {
@@ -43,12 +49,18 @@ public class EpicHandler extends RequestHandler {
                     sendText(exchange, "", 201);
                 } catch (JsonSyntaxException e) {
                     sendBadRequest(exchange);
+                } catch (Exception e) {
+                    sendInternalError(exchange);
                 }
             }
             case REMOVE -> {
-                int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
-                taskManager.removeEpic(id);
-                sendText(exchange, "", 200);
+                try {
+                    int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
+                    taskManager.removeEpic(id);
+                    sendText(exchange, "", 200);
+                } catch (Exception e) {
+                    sendInternalError(exchange);
+                }
             }
             case null, default -> sendBadRequest(exchange);
         }

@@ -28,6 +28,8 @@ public class SubtaskHandler extends RequestHandler {
                     sendText(exchange, body, 200);
                 } catch (TaskNotFoundException e) {
                     sendNotFound(exchange);
+                } catch (Exception e) {
+                    sendInternalError(exchange);
                 }
             }
             case CREATE -> {
@@ -40,19 +42,25 @@ public class SubtaskHandler extends RequestHandler {
                     } else {
                         taskManager.updateSubtask(subtask);
                     }
+                    sendText(exchange, "", 201);
                 } catch (JsonSyntaxException e) {
                     sendBadRequest(exchange);
                 } catch (TaskOverlapException e) {
                     sendHasIntersections(exchange);
                 } catch (TaskNotFoundException e) {
                     sendNotFound(exchange);
+                } catch (Exception e) {
+                    sendInternalError(exchange);
                 }
-                sendText(exchange, "", 201);
             }
             case REMOVE -> {
+                try {
                 int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
                 taskManager.removeSubtask(id);
                 sendText(exchange, "", 200);
+                } catch (Exception e) {
+                    sendInternalError(exchange);
+                }
             }
             case null, default -> sendBadRequest(exchange);
         }
