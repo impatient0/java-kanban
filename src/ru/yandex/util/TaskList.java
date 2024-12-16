@@ -1,13 +1,13 @@
 package ru.yandex.util;
 
-import ru.yandex.model.Task;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import ru.yandex.model.Task;
 
 public class TaskList {
+
     private final Map<Integer, Node<Task>> indexMap = new HashMap<>();
     private Node<Task> first = null, last = null;
 
@@ -51,6 +51,7 @@ public class TaskList {
     }
 
     private static class Node<E> {
+
         E data;
         Node<E> next;
         Node<E> previous;

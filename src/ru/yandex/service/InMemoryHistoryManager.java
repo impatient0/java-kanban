@@ -1,13 +1,13 @@
 package ru.yandex.service;
 
-import ru.yandex.model.Task;
-import ru.yandex.util.TaskList;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import ru.yandex.model.Task;
+import ru.yandex.util.TaskList;
 
 public class InMemoryHistoryManager implements HistoryManager {
+
     private final TaskList history = new TaskList();
 
     @Override

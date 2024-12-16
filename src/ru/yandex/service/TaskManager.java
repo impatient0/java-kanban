@@ -1,10 +1,9 @@
 package ru.yandex.service;
 
+import java.util.List;
 import ru.yandex.model.Epic;
 import ru.yandex.model.Subtask;
 import ru.yandex.model.Task;
-
-import java.util.List;
 
 public interface TaskManager {
 

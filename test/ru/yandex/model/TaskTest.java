@@ -1,12 +1,11 @@
 package ru.yandex.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class TaskTest {
 
@@ -16,7 +15,8 @@ class TaskTest {
     @BeforeEach
     void setUp() {
         nowDateTime = LocalDateTime.now();
-        task = new Task("_tname_", "_tdesc_", 42, TaskStatus.NEW, Duration.ofHours(42), nowDateTime);
+        task = new Task("_tname_", "_tdesc_", 42, TaskStatus.NEW, Duration.ofHours(42),
+            nowDateTime);
     }
 
     @Test
@@ -28,7 +28,7 @@ class TaskTest {
     @Test
     void shouldTreatTasksWithSameIdAsEqual() {
         Task anotherTask = new Task("_anothertname_", "_anothertdesc_", 42, TaskStatus.IN_PROGRESS,
-                Duration.ofHours(69), nowDateTime);
+            Duration.ofHours(69), nowDateTime);
         assertEquals(task, anotherTask);
     }
 

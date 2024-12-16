@@ -1,16 +1,24 @@
 package ru.yandex.service;
 
-import ru.yandex.exceptions.ManagerLoadException;
-import ru.yandex.exceptions.ManagerSaveException;
-import ru.yandex.model.*;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import ru.yandex.exceptions.ManagerLoadException;
+import ru.yandex.exceptions.ManagerSaveException;
+import ru.yandex.model.Epic;
+import ru.yandex.model.Subtask;
+import ru.yandex.model.Task;
+import ru.yandex.model.TaskStatus;
+import ru.yandex.model.TaskType;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
+
     private static final String HEADER = "id,type,name,status,description,duration,start_time,epic";
     private final Path saveFile;
 
@@ -70,7 +78,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         break;
                     case TaskType.SUBTASK:
                         int epicId = Integer.parseInt(split[7]);
-                        Subtask subtask = new Subtask(name, description, id, status, epicId, duration, startTime);
+                        Subtask subtask = new Subtask(name, description, id, status, epicId,
+                            duration, startTime);
                         epics.get(epicId).addSubtask(subtask);
                         subtasks.put(id, subtask);
                         prioritizedTasks.add(subtask);
@@ -90,7 +99,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             print.println(HEADER);
             int curId = 0;
             while (curId < freeId) {
-                Task task = tasks.get(curId), epic = epics.get(curId), subtask = subtasks.get(curId);
+                Task task = tasks.get(curId), epic = epics.get(curId), subtask = subtasks.get(
+                    curId);
                 Task curTask = task != null ? task : (epic != null ? epic : subtask);
                 if (curTask == null) {
                     curId++;

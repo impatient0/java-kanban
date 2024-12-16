@@ -1,16 +1,15 @@
 package ru.yandex.model;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 class SubtaskTest {
 
     private static final Subtask subtask = new Subtask("_sname_", "_sdesc_", 1, TaskStatus.NEW, 42,
-            Duration.ofHours(42), LocalDateTime.now());
+        Duration.ofHours(42), LocalDateTime.now());
 
     @Test
     void shouldConvertSubtaskToString() {
@@ -20,8 +19,9 @@ class SubtaskTest {
 
     @Test
     void shouldTreatSubtasksWithSameIdAsEqual() {
-        Subtask anotherSubtask = new Subtask("_anothersname_", "_anothersdesc_", 1, TaskStatus.DONE, 69,
-                Duration.ofHours(42), LocalDateTime.now());
+        Subtask anotherSubtask = new Subtask("_anothersname_", "_anothersdesc_", 1, TaskStatus.DONE,
+            69,
+            Duration.ofHours(42), LocalDateTime.now());
         assertEquals(subtask, anotherSubtask);
     }
 
