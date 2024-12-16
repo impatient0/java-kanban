@@ -32,8 +32,8 @@ import ru.yandex.util.LocalDateTimeAdapter;
 
 public class HttpTaskServerTest {
 
-    private static TaskManager taskManager;
-    private static HttpTaskServer taskServer;
+    private TaskManager taskManager;
+    private HttpTaskServer taskServer;
     private final Gson gson = new GsonBuilder().registerTypeAdapter(Duration.class,
             new DurationTypeAdapter())
         .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();

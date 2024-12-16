@@ -64,7 +64,7 @@ public class TaskHandler extends RequestHandler {
                     sendInternalError(exchange);
                 }
             }
-            case null, default -> sendBadRequest(exchange);
+            case UNKNOWN -> sendBadRequest(exchange);
         }
     }
 }

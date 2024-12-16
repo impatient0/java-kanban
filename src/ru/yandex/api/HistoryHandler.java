@@ -17,7 +17,7 @@ public class HistoryHandler extends RequestHandler {
                 String body = gson.toJson(taskManager.getHistory());
                 sendText(exchange, body, 200);
             }
-            case null, default -> sendBadRequest(exchange);
+            case UNKNOWN -> sendBadRequest(exchange);
         }
     }
 }
