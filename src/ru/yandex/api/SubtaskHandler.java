@@ -55,9 +55,9 @@ public class SubtaskHandler extends RequestHandler {
             }
             case REMOVE -> {
                 try {
-                int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
-                taskManager.removeSubtask(id);
-                sendText(exchange, "", 200);
+                    int id = Integer.parseInt(exchange.getRequestURI().getPath().split("/")[2]);
+                    taskManager.removeSubtask(id);
+                    sendText(exchange, "", 200);
                 } catch (Exception e) {
                     sendInternalError(exchange);
                 }
